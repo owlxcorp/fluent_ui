@@ -465,20 +465,15 @@ class NavigationViewState extends State<NavigationView> {
                       PaneScrollConfiguration(
                         child: () {
                           if (openedWithoutOverlay) {
-                            return Mica(
-                              key: _overlayKey,
-                              backgroundColor: theme.backgroundColor,
-                              child: Container(
-                                margin:
-                                    const EdgeInsets.symmetric(vertical: 1.0),
-                                child: _OpenNavigationPane(
-                                  theme: theme,
-                                  pane: pane,
-                                  paneKey: _panelKey,
-                                  listKey: _listKey,
-                                  onToggle: toggleCompactOpenMode,
-                                  initiallyOpen: true,
-                                ),
+                            return Container(
+                              margin: const EdgeInsets.symmetric(vertical: 1.0),
+                              child: _OpenNavigationPane(
+                                theme: theme,
+                                pane: pane,
+                                paneKey: _panelKey,
+                                listKey: _listKey,
+                                onToggle: toggleCompactOpenMode,
+                                initiallyOpen: true,
                               ),
                             );
                           } else {
@@ -527,48 +522,40 @@ class NavigationViewState extends State<NavigationView> {
                     child: () {
                       if (_compactOverlayOpen) {
                         return ClipRect(
-                          child: Mica(
-                            key: _overlayKey,
-                            backgroundColor: overlayBackgroundColor(),
-                            elevation: 10.0,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: const Color(0xFF6c6c6c),
-                                  width: 0.15,
-                                ),
-                                borderRadius: BorderRadius.circular(8.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xfff3f3f3),
+                              border: Border.all(
+                                color: const Color(0xFF6c6c6c),
+                                width: 0.15,
                               ),
-                              margin: const EdgeInsets.symmetric(
-                                vertical: 1.0,
-                              ),
-                              padding: appBarPadding,
-                              child: _OpenNavigationPane(
-                                theme: theme,
-                                pane: pane,
-                                paneKey: _panelKey,
-                                listKey: _listKey,
-                                onToggle: toggleCompactOpenMode,
-                                onItemSelected: toggleCompactOpenMode,
-                              ),
+                              borderRadius: BorderRadius.circular(8.0),
                             ),
-                          ),
-                        );
-                      } else {
-                        return Mica(
-                          key: _overlayKey,
-                          backgroundColor: overlayBackgroundColor(),
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                              top: appBarPadding.resolve(direction).top,
+                            margin: const EdgeInsets.symmetric(
+                              vertical: 1.0,
                             ),
-                            child: _CompactNavigationPane(
+                            padding: appBarPadding,
+                            child: _OpenNavigationPane(
+                              theme: theme,
                               pane: pane,
                               paneKey: _panelKey,
                               listKey: _listKey,
                               onToggle: toggleCompactOpenMode,
-                              onOpenSearch: widget.onOpenSearch,
+                              onItemSelected: toggleCompactOpenMode,
                             ),
+                          ),
+                        );
+                      } else {
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            top: appBarPadding.resolve(direction).top,
+                          ),
+                          child: _CompactNavigationPane(
+                            pane: pane,
+                            paneKey: _panelKey,
+                            listKey: _listKey,
+                            onToggle: toggleCompactOpenMode,
+                            onOpenSearch: widget.onOpenSearch,
                           ),
                         );
                       }
@@ -630,29 +617,23 @@ class NavigationViewState extends State<NavigationView> {
                   width: kOpenNavigationPaneWidth,
                   height: mediaQuery.size.height,
                   child: PaneScrollConfiguration(
-                    child: ColoredBox(
-                      color: Colors.black,
-                      child: Mica(
-                        backgroundColor: overlayBackgroundColor(),
-                        elevation: 0.0,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: const Color(0xFF6c6c6c),
-                              width: 0.15,
-                            ),
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          margin: const EdgeInsets.symmetric(vertical: 1.0),
-                          padding: appBarPadding,
-                          child: _OpenNavigationPane(
-                            theme: theme,
-                            pane: pane,
-                            paneKey: _panelKey,
-                            listKey: _listKey,
-                            onItemSelected: () => minimalPaneOpen = false,
-                          ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xfff3f3f3),
+                        border: Border.all(
+                          color: const Color(0xFF6c6c6c),
+                          width: 0.15,
                         ),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      margin: const EdgeInsets.symmetric(vertical: 1.0),
+                      padding: appBarPadding,
+                      child: _OpenNavigationPane(
+                        theme: theme,
+                        pane: pane,
+                        paneKey: _panelKey,
+                        listKey: _listKey,
+                        onItemSelected: () => minimalPaneOpen = false,
                       ),
                     ),
                   ),
@@ -672,15 +653,12 @@ class NavigationViewState extends State<NavigationView> {
       } else {
         throw 'Either pane or content must be provided';
       }
-      return Mica(
-        backgroundColor: theme.backgroundColor,
-        child: InheritedNavigationView(
-          displayMode: _compactOverlayOpen ? PaneDisplayMode.open : displayMode,
-          minimalPaneOpen: minimalPaneOpen,
-          pane: widget.pane,
-          oldIndex: _oldIndex,
-          child: PaneItemKeys(keys: _itemKeys, child: paneResult),
-        ),
+      return InheritedNavigationView(
+        displayMode: _compactOverlayOpen ? PaneDisplayMode.open : displayMode,
+        minimalPaneOpen: minimalPaneOpen,
+        pane: widget.pane,
+        oldIndex: _oldIndex,
+        child: PaneItemKeys(keys: _itemKeys, child: paneResult),
       );
     });
   }
@@ -930,7 +908,7 @@ class NavigationViewScrollBehavior extends FluentScrollBehavior {
   @override
   Widget buildScrollbar(context, child, details) {
     return Scrollbar(
-      controller: details.controller,
+      controller: PrimaryScrollController.of(context),
       thumbVisibility: false,
       interactive: true,
       child: child,
