@@ -449,6 +449,7 @@ class CommandBarButton extends CommandBarItem {
 
   /// The trailing widget to use if this item is shown in the secondary menu
   final Widget? trailing;
+  final Widget? flyoutWidget;
   final VoidCallback? onPressed;
   final VoidCallback? onLongPress;
   final FocusNode? focusNode;
@@ -460,6 +461,7 @@ class CommandBarButton extends CommandBarItem {
     this.label,
     this.subtitle,
     this.trailing,
+    this.flyoutWidget,
     required this.onPressed,
     this.onLongPress,
     this.focusNode,
@@ -493,6 +495,7 @@ class CommandBarButton extends CommandBarItem {
           icon: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              if (flyoutWidget != null) flyoutWidget!,
               if (showIcon)
                 IconTheme.merge(
                   data: const IconThemeData(size: 16),
@@ -500,6 +503,11 @@ class CommandBarButton extends CommandBarItem {
                 ),
               if (showIcon && showLabel) const SizedBox(width: 10),
               if (showLabel) label!,
+              if (flyoutWidget != null)
+                const Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: Icon(FluentIcons.chevron_down_small, size: 8),
+                ),
             ],
           ),
         );
