@@ -545,7 +545,7 @@ class NavigationViewState extends State<NavigationView> {
                               ),
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            margin: const EdgeInsetsDirectional.symmetric(
+                            margin: const EdgeInsets.symmetric(
                               vertical: 1.0,
                             ),
                             padding: appBarPadding,
