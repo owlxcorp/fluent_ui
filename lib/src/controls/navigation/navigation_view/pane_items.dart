@@ -7,9 +7,11 @@ class NavigationPaneItem with Diagnosticable {
   /// See also:
   ///
   ///   * [PaneItem.build], which assigns
-  GlobalKey itemKey = GlobalKey();
+  final GlobalKey itemKey = GlobalKey();
 
-  NavigationPaneItem();
+  final Key? key;
+
+  NavigationPaneItem({this.key});
 }
 
 /// The item used by [NavigationView] to display the tiles.
@@ -37,6 +39,7 @@ class PaneItem extends NavigationPaneItem {
 
   /// Creates a pane item.
   PaneItem({
+    Key? key,
     required this.icon,
     required this.body,
     this.title,
@@ -48,7 +51,7 @@ class PaneItem extends NavigationPaneItem {
     this.tileColor,
     this.selectedTileColor,
     this.onTap,
-  });
+  }) : super(key: key);
 
   /// The title used by this item. If the display mode is top
   /// or compact, this is shown as a tooltip. If it's open, this
@@ -121,9 +124,6 @@ class PaneItem extends NavigationPaneItem {
     assert(mode != PaneDisplayMode.auto);
 
     assert(debugCheckHasFluentTheme(context));
-    assert(debugCheckHasDirectionality(context));
-
-    final direction = Directionality.of(context);
 
     final NavigationPaneThemeData theme = NavigationPaneTheme.of(context);
     final String titleText = title?.getProperty<String>() ?? '';
@@ -189,21 +189,25 @@ class PaneItem extends NavigationPaneItem {
               return Container(
                 key: itemKey,
                 height: 36.0,
-                alignment: Alignment.center,
+                alignment: AlignmentDirectional.center,
                 child: Padding(
                   padding: theme.iconPadding ?? EdgeInsets.zero,
                   child: IconTheme.merge(
                     data: iconThemeData,
                     child: Align(
-                      alignment: Alignment.centerLeft,
+                      alignment: AlignmentDirectional.centerStart,
                       child: () {
                         if (infoBadge != null) {
                           return Stack(
-                            alignment: Alignment.center,
+                            alignment: AlignmentDirectional.center,
                             clipBehavior: Clip.none,
                             children: [
                               icon,
-                              Positioned(right: -8, top: -8, child: infoBadge!),
+                              PositionedDirectional(
+                                end: -8,
+                                top: -8,
+                                child: infoBadge!,
+                              ),
                             ],
                           );
                         }
@@ -259,8 +263,7 @@ class PaneItem extends NavigationPaneItem {
                 return Stack(key: itemKey, clipBehavior: Clip.none, children: [
                   result,
                   if (infoBadge != null)
-                    Positioned.directional(
-                      textDirection: direction,
+                    PositionedDirectional(
                       end: -3,
                       top: 3,
                       child: infoBadge!,
@@ -277,7 +280,7 @@ class PaneItem extends NavigationPaneItem {
           label: titleText.isEmpty ? null : titleText,
           selected: selected,
           child: Container(
-            margin: const EdgeInsets.only(right: 6.0, left: 6.0),
+            margin: const EdgeInsets.symmetric(horizontal: 6.0),
             decoration: BoxDecoration(
               color: () {
                 final ButtonState<Color?> tileColor = this.tileColor ??
@@ -334,7 +337,8 @@ class PaneItem extends NavigationPaneItem {
     }();
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4.0),
+      key: key,
+      padding: const EdgeInsetsDirectional.only(bottom: 4.0),
       child: () {
         // If there is an indicator and the item is an effective item
         if (maybeBody?.pane?.indicator != null &&
@@ -403,7 +407,11 @@ class PaneItem extends NavigationPaneItem {
 ///   * [PaneItemExpander], which creates hierhical navigation
 class PaneItemSeparator extends NavigationPaneItem {
   /// Creates an item separator.
-  PaneItemSeparator({this.color, this.thickness});
+  PaneItemSeparator({
+    Key? key,
+    this.color,
+    this.thickness,
+  }) : super(key: key);
 
   /// The color used by the [Divider].
   final Color? color;
@@ -412,19 +420,22 @@ class PaneItemSeparator extends NavigationPaneItem {
   final double? thickness;
 
   Widget build(BuildContext context, Axis direction) {
-    return Divider(
-      key: itemKey,
-      direction: direction,
-      style: DividerThemeData(
-        thickness: thickness,
-        decoration: color != null ? BoxDecoration(color: color) : null,
-        verticalMargin: const EdgeInsets.symmetric(
-          horizontal: 8.0,
-          vertical: 10.0,
-        ),
-        horizontalMargin: const EdgeInsets.symmetric(
-          horizontal: 8.0,
-          vertical: 10.0,
+    return KeyedSubtree(
+      key: key,
+      child: Divider(
+        key: itemKey,
+        direction: direction,
+        style: DividerThemeData(
+          thickness: thickness,
+          decoration: color != null ? BoxDecoration(color: color) : null,
+          verticalMargin: const EdgeInsets.symmetric(
+            horizontal: 8.0,
+            vertical: 10.0,
+          ),
+          horizontalMargin: const EdgeInsets.symmetric(
+            horizontal: 8.0,
+            vertical: 10.0,
+          ),
         ),
       ),
     );
@@ -442,7 +453,7 @@ class PaneItemSeparator extends NavigationPaneItem {
 ///   * [PaneItemExpander], which creates hierhical navigation
 class PaneItemHeader extends NavigationPaneItem {
   /// Creates a pane header.
-  PaneItemHeader({required this.header});
+  PaneItemHeader({Key? key, required this.header}) : super(key: key);
 
   /// The header. The default style is [NavigationPaneThemeData.itemHeaderTextStyle],
   /// but can be overriten by [Text.style].
@@ -454,22 +465,25 @@ class PaneItemHeader extends NavigationPaneItem {
     assert(debugCheckHasFluentTheme(context));
     final theme = NavigationPaneTheme.of(context);
     final view = InheritedNavigationView.of(context);
-    return Padding(
-      key: itemKey,
-      padding: (theme.iconPadding ?? EdgeInsets.zero).add(
-        view.displayMode == PaneDisplayMode.top
-            ? EdgeInsets.zero
-            : theme.headerPadding ?? EdgeInsets.zero,
-      ),
-      child: DefaultTextStyle(
-        style: theme.itemHeaderTextStyle ?? const TextStyle(),
-        softWrap: false,
-        maxLines: 1,
-        overflow: TextOverflow.fade,
-        textAlign: view.displayMode == PaneDisplayMode.top
-            ? TextAlign.center
-            : TextAlign.left,
-        child: header,
+    return KeyedSubtree(
+      key: key,
+      child: Padding(
+        key: itemKey,
+        padding: (theme.iconPadding ?? EdgeInsets.zero).add(
+          view.displayMode == PaneDisplayMode.top
+              ? EdgeInsets.zero
+              : theme.headerPadding ?? EdgeInsets.zero,
+        ),
+        child: DefaultTextStyle(
+          style: theme.itemHeaderTextStyle ?? const TextStyle(),
+          softWrap: false,
+          maxLines: 1,
+          overflow: TextOverflow.fade,
+          textAlign: view.displayMode == PaneDisplayMode.top
+              ? TextAlign.center
+              : TextAlign.left,
+          child: header,
+        ),
       ),
     );
   }
@@ -492,6 +506,7 @@ class PaneItemHeader extends NavigationPaneItem {
 ///   * [PaneItemExpander], which creates hierhical navigation
 class PaneItemAction extends PaneItem {
   PaneItemAction({
+    Key? key,
     required super.icon,
     super.body = const SizedBox.shrink(),
     required VoidCallback super.onTap,
@@ -503,7 +518,7 @@ class PaneItemAction extends PaneItem {
     super.selectedTileColor,
     super.tileColor,
     super.trailing,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(
@@ -550,6 +565,7 @@ class PaneItemExpander extends PaneItem {
   final _PaneItemExpanderKey expanderKey = _PaneItemExpanderKey();
 
   PaneItemExpander({
+    Key? key,
     required super.icon,
     required this.items,
     required super.body,
@@ -562,10 +578,11 @@ class PaneItemExpander extends PaneItem {
     super.tileColor,
     super.selectedTileColor,
     super.onTap,
-  }) : assert(
+  })  : assert(
           items.any((item) => item is PaneItemExpander) == false,
           'There can not be nested PaneItemExpanders',
-        );
+        ),
+        super(key: key);
 
   final List<NavigationPaneItem> items;
   static const kDefaultTrailing = Icon(FluentIcons.chevron_down, size: 8.0);
@@ -581,15 +598,18 @@ class PaneItemExpander extends PaneItem {
     bool? autofocus,
     int? itemIndex,
   }) {
-    return _PaneItemExpander(
-      key: expanderKey,
-      item: this,
-      items: items,
-      displayMode: displayMode,
-      showTextOnTop: showTextOnTop,
-      selected: selected,
-      onPressed: onPressed,
-      onItemPressed: onItemPressed,
+    return KeyedSubtree(
+      key: key,
+      child: _PaneItemExpander(
+        key: expanderKey,
+        item: this,
+        items: items,
+        displayMode: displayMode,
+        showTextOnTop: showTextOnTop,
+        selected: selected,
+        onPressed: onPressed,
+        onItemPressed: onItemPressed,
+      ),
     );
   }
 }
@@ -821,7 +841,7 @@ class __PaneItemExpanderState extends State<_PaneItemExpander>
                         horizontal: 10.0,
                         vertical: 8.0,
                       ),
-                      margin: const EdgeInsets.only(bottom: 4.0),
+                      margin: const EdgeInsetsDirectional.only(bottom: 4.0),
                       child: DefaultTextStyle(
                         style: navigationTheme.itemHeaderTextStyle ??
                             const TextStyle(),
@@ -878,7 +898,7 @@ class _PaneItemExpanderMenuItem extends MenuFlyoutItemInterface {
               horizontal: 10.0,
               vertical: 8.0,
             ),
-            margin: const EdgeInsets.only(bottom: 4.0),
+            margin: const EdgeInsetsDirectional.only(bottom: 4.0),
             decoration: BoxDecoration(
               color: ButtonThemeData.uncheckedInputColor(
                 theme,

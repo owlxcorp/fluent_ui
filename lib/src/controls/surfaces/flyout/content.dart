@@ -6,7 +6,7 @@ part of 'flyout.dart';
 ///
 ///   * [Flyout], which is a light dismiss container that can show arbitrary UI
 ///     as its content
-///   * [FlyoutListTile],
+///   * [FlyoutListTile], a list tile adapted to flyouts
 class FlyoutContent extends StatelessWidget {
   /// Creates a flyout content
   const FlyoutContent({
@@ -90,7 +90,7 @@ class FlyoutListTile extends StatelessWidget {
     this.focusNode,
     this.autofocus = false,
     this.semanticLabel,
-    this.margin = const EdgeInsets.only(bottom: 5.0),
+    this.margin = const EdgeInsetsDirectional.only(bottom: 5.0),
     this.selected = false,
   }) : super(key: key);
 
@@ -128,7 +128,7 @@ class FlyoutListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     assert(debugCheckHasFluentTheme(context));
-    final size = ContentSizeInfo.of(context).size;
+    final size = ContentSizeInfo.maybeOf(context)?.size;
 
     return HoverButton(
       key: key,
@@ -170,12 +170,13 @@ class FlyoutListTile extends StatelessWidget {
                   ),
                 ),
               Flexible(
-                fit: size.isEmpty ? FlexFit.loose : FlexFit.tight,
+                fit: size == null || size.isEmpty
+                    ? FlexFit.loose
+                    : FlexFit.tight,
                 child: Padding(
                   padding: const EdgeInsetsDirectional.only(end: 10.0),
-                  child: DefaultTextStyle(
+                  child: DefaultTextStyle.merge(
                     style: TextStyle(
-                      inherit: false,
                       fontSize: 14.0,
                       letterSpacing: -0.15,
                       color: theme.inactiveColor,
@@ -185,9 +186,8 @@ class FlyoutListTile extends StatelessWidget {
                 ),
               ),
               if (trailing != null)
-                DefaultTextStyle(
+                DefaultTextStyle.merge(
                   style: TextStyle(
-                    inherit: false,
                     fontSize: 12.0,
                     color: theme.borderInputColor,
                     height: 0.7,
@@ -197,7 +197,7 @@ class FlyoutListTile extends StatelessWidget {
             ]),
           ),
           if (selected)
-            Positioned(
+            PositionedDirectional(
               top: 0,
               bottom: 0,
               child: Container(
@@ -209,7 +209,6 @@ class FlyoutListTile extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(100),
                 ),
-                child: trailing!,
               ),
             ),
         ]);

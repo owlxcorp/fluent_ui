@@ -214,6 +214,20 @@ class NavigationViewState extends State<NavigationView> {
 
     if (oldWidget.pane?.selected != widget.pane?.selected) {
       _oldIndex = oldWidget.pane?.selected ?? -1;
+
+      final item = widget.pane?.selectedItem.itemKey.currentContext;
+
+      if (item != null) {
+        final atEnd =
+            (widget.pane!.effectiveItems.length / 2) < widget.pane!.selected!;
+
+        Scrollable.ensureVisible(
+          item,
+          alignmentPolicy: atEnd
+              ? ScrollPositionAlignmentPolicy.keepVisibleAtEnd
+              : ScrollPositionAlignmentPolicy.keepVisibleAtStart,
+        );
+      }
     }
 
     if (oldWidget.pane?.effectiveItems.length !=
@@ -531,7 +545,7 @@ class NavigationViewState extends State<NavigationView> {
                               ),
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            margin: const EdgeInsets.symmetric(
+                            margin: const EdgeInsetsDirectional.symmetric(
                               vertical: 1.0,
                             ),
                             padding: appBarPadding,
@@ -547,7 +561,7 @@ class NavigationViewState extends State<NavigationView> {
                         );
                       } else {
                         return Padding(
-                          padding: EdgeInsets.only(
+                          padding: EdgeInsetsDirectional.only(
                             top: appBarPadding.resolve(direction).top,
                           ),
                           child: _CompactNavigationPane(
@@ -590,10 +604,10 @@ class NavigationViewState extends State<NavigationView> {
               break;
             case PaneDisplayMode.minimal:
               paneResult = Stack(children: [
-                Positioned(
+                PositionedDirectional(
                   top: widget.appBar?.finalHeight(context) ?? 0.0,
-                  left: 0.0,
-                  right: 0.0,
+                  start: 0.0,
+                  end: 0.0,
                   bottom: 0.0,
                   child: content,
                 ),
@@ -669,7 +683,8 @@ class NavigationViewState extends State<NavigationView> {
       return PrimaryScrollController(
         controller: paneScrollController,
         child: ScrollConfiguration(
-          behavior: const NavigationViewScrollBehavior(),
+          behavior: widget.pane?.scrollBehavior ??
+              const NavigationViewScrollBehavior(),
           child: child,
         ),
       );
@@ -815,10 +830,8 @@ class _NavigationAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     assert(debugCheckHasMediaQuery(context));
     assert(debugCheckHasFluentLocalizations(context));
-    assert(debugCheckHasDirectionality(context));
 
     final mediaQuery = MediaQuery.of(context);
-    final direction = Directionality.of(context);
 
     final PaneDisplayMode displayMode =
         InheritedNavigationView.maybeOf(context)?.displayMode ??
@@ -863,7 +876,7 @@ class _NavigationAppBar extends StatelessWidget {
       case PaneDisplayMode.compact:
         result = Stack(children: [
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: AlignmentDirectional.centerStart,
             child: Row(mainAxisSize: MainAxisSize.min, children: [
               leading,
               if (additionalLeading != null) additionalLeading!,
@@ -871,14 +884,13 @@ class _NavigationAppBar extends StatelessWidget {
             ]),
           ),
           if (appBar.actions != null)
-            Positioned.directional(
-              textDirection: direction,
+            PositionedDirectional(
               start: 0,
               end: 0.0,
               top: 0.0,
               bottom: 0.0,
               child: Align(
-                alignment: Alignment.topRight,
+                alignment: AlignmentDirectional.topEnd,
                 child: appBar.actions!,
               ),
             ),
@@ -892,7 +904,7 @@ class _NavigationAppBar extends StatelessWidget {
     return Container(
       color: appBar.backgroundColor,
       height: appBar.finalHeight(context),
-      padding: EdgeInsets.only(top: topPadding),
+      padding: EdgeInsetsDirectional.only(top: topPadding),
       child: result,
     );
   }

@@ -902,6 +902,7 @@ class _TextBoxState extends State<TextBox>
     final Color disabledColor = theme.resources.textFillColorDisabled;
     final defaultTextStyle = TextStyle(
       color: enabled ? theme.resources.textFillColorPrimary : disabledColor,
+      fontFamily: theme.typography.body?.fontFamily,
     );
     final TextStyle textStyle = defaultTextStyle.merge(widget.style);
 
@@ -1038,7 +1039,8 @@ class _TextBoxState extends State<TextBox>
         ignoring: !enabled,
         child: HoverButton(
           focusEnabled: false,
-          onPressed: enabled ? () {} : null,
+          forceEnabled: enabled,
+          hitTestBehavior: HitTestBehavior.translucent,
           builder: (context, states) {
             return Container(
               decoration: BoxDecoration(

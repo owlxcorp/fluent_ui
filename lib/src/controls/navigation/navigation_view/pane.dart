@@ -88,6 +88,7 @@ class NavigationPane with Diagnosticable {
     this.customPane,
     this.menuButton,
     this.scrollController,
+    this.scrollBehavior,
     this.leading,
     this.indicator = const StickyNavigationIndicator(),
   }) : assert(
@@ -172,13 +173,18 @@ class NavigationPane with Diagnosticable {
   /// Called when the current index changes.
   final ValueChanged<int>? onChanged;
 
-  /// The scroll controller used by the pane when [displayMode]
-  /// is [PaneDisplayMode.compact] and [PaneDisplayMode.open].
+  /// The scroll controller used by the pane when [displayMode] is
+  /// [PaneDisplayMode.compact] and [PaneDisplayMode.open].
   ///
-  /// If null, a local scroll controller is created to control
-  /// the scrolling and keep the state of the scroll when the
-  /// display mode is toggled.
+  /// If null, a local scroll controller is created to control the scrolling and
+  /// keep the state of the scroll when the display mode is toggled.
   final ScrollController? scrollController;
+
+  /// The scroll behavior used by the pane when [displayMode] is
+  /// [PaneDisplayMode.compact] and [PaneDisplayMode.open].
+  ///
+  /// If null, [NavigationViewScrollBehavior] is used.
+  final ScrollBehavior? scrollBehavior;
 
   /// The leading Widget for the Pane
   final Widget? leading;
@@ -724,7 +730,7 @@ class _TopNavigationPaneState extends State<_TopNavigationPane> {
         ),
         if (widget.pane.autoSuggestBox != null)
           Container(
-            margin: const EdgeInsets.only(left: 30.0),
+            margin: const EdgeInsetsDirectional.only(start: 30.0),
             constraints: const BoxConstraints(minWidth: 100.0, maxWidth: 215.0),
             child: widget.pane.autoSuggestBox!,
           ),
@@ -1035,7 +1041,8 @@ class _CompactNavigationPane extends StatelessWidget {
   Widget build(BuildContext context) {
     assert(debugCheckHasFluentTheme(context));
     final theme = NavigationPaneTheme.of(context);
-    const EdgeInsetsGeometry topPadding = EdgeInsets.only(bottom: 8.0);
+    const EdgeInsetsGeometry topPadding =
+        EdgeInsetsDirectional.only(bottom: 8.0);
     final bool showReplacement =
         pane.autoSuggestBox != null && pane.autoSuggestBoxReplacement != null;
     return AnimatedContainer(
@@ -1045,7 +1052,7 @@ class _CompactNavigationPane extends StatelessWidget {
       width: pane.size?.compactWidth ?? kCompactNavigationPaneWidth,
       child: Align(
         key: pane.paneKey,
-        alignment: Alignment.topCenter,
+        alignment: AlignmentDirectional.topCenter,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           () {
             if (pane.menuButton != null) return pane.menuButton!;
@@ -1200,7 +1207,8 @@ class _OpenNavigationPaneState extends State<_OpenNavigationPane>
   @override
   Widget build(BuildContext context) {
     assert(debugCheckHasFluentTheme(context));
-    const EdgeInsetsGeometry topPadding = EdgeInsets.only(bottom: 6.0);
+    const EdgeInsetsGeometry topPadding =
+        EdgeInsetsDirectional.only(bottom: 6.0);
     final menuButton = () {
       if (widget.pane.menuButton != null) return widget.pane.menuButton!;
       if (widget.onToggle != null) {
@@ -1249,7 +1257,7 @@ class _OpenNavigationPaneState extends State<_OpenNavigationPane>
                       menuButton ?? const SizedBox.shrink(),
                       Expanded(
                         child: Align(
-                          alignment: Alignment.centerLeft,
+                          alignment: AlignmentDirectional.centerStart,
                           child: widget.pane.header!,
                         ),
                       ),
@@ -1263,7 +1271,7 @@ class _OpenNavigationPaneState extends State<_OpenNavigationPane>
               Container(
                 padding: theme.iconPadding ?? EdgeInsets.zero,
                 height: 41.0,
-                alignment: Alignment.center,
+                alignment: AlignmentDirectional.center,
                 margin: topPadding,
                 child: widget.pane.autoSuggestBox!,
               ),
@@ -1272,6 +1280,7 @@ class _OpenNavigationPaneState extends State<_OpenNavigationPane>
                 shrinkWrap: true,
                 key: widget.listKey,
                 primary: true,
+                addAutomaticKeepAlives: true,
                 children: widget.pane.items.map((item) {
                   return _OpenNavigationPane.buildItem(
                     context,

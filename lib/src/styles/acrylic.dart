@@ -91,8 +91,10 @@ class _AcrylicState extends State<Acrylic> {
     super.initState();
     _NoiseTextureCacher._instance ??= _NoiseTextureCacher._new();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (mounted) _updateProperties();
-      setState(() {});
+      if (mounted) {
+        _updateProperties();
+        setState(() {});
+      }
     });
   }
 
@@ -398,7 +400,7 @@ class _AcrylicGuts extends StatelessWidget {
                             "assets/AcrylicNoise.png",
                             package: "fluent_ui",
                           ),
-                          alignment: Alignment.topLeft,
+                          alignment: AlignmentDirectional.topStart,
                           repeat: ImageRepeat.repeat,
                         ),
                         backgroundBlendMode: BlendMode.srcOver,

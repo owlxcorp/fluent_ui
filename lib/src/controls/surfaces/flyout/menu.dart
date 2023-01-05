@@ -124,7 +124,14 @@ class MenuFlyoutItemBuilder extends MenuFlyoutItemInterface {
   Widget build(BuildContext context) => builder(context);
 }
 
+/// The standart flyout item used inside a [MenuFlyout]
+///
+/// See also:
+///
+///   * [MenuFlyout]
+///   * [Flyout]
 class MenuFlyoutItem extends MenuFlyoutItemInterface {
+  /// Creates a menu flyout item
   MenuFlyoutItem({
     Key? key,
     this.leading,
@@ -175,7 +182,7 @@ class MenuFlyoutSeparator extends MenuFlyoutItemInterface {
     return SizedBox(
       width: size.width,
       child: const Padding(
-        padding: EdgeInsets.only(bottom: 5.0),
+        padding: EdgeInsetsDirectional.only(bottom: 5.0),
         child: Divider(
           style: DividerThemeData(horizontalMargin: EdgeInsets.zero),
         ),

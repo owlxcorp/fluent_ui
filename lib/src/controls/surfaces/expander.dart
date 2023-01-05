@@ -188,6 +188,7 @@ class ExpanderState extends State<Expander>
       // HEADER
       HoverButton(
         onPressed: _handlePressed,
+        hitTestBehavior: HitTestBehavior.deferToChild,
         builder: (context, states) {
           return Container(
             height: widget.headerHeight,
@@ -235,7 +236,7 @@ class ExpanderState extends State<Expander>
                           ButtonThemeData.uncheckedInputColor(_theme, states),
                       borderRadius: BorderRadius.circular(4.0),
                     ),
-                    alignment: Alignment.center,
+                    alignment: AlignmentDirectional.center,
                     child: widget.icon ??
                         RotationTransition(
                           turns: Tween<double>(begin: 0, end: 0.5)

@@ -9,12 +9,26 @@ class CommandBarCard extends StatelessWidget {
     required this.child,
     this.margin = EdgeInsets.zero,
     this.padding = const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
+    this.borderRadius = const BorderRadius.all(Radius.circular(4.0)),
     this.backgroundColor,
   }) : super(key: key);
 
   final Widget child;
+
+  /// The margin around [child]
   final EdgeInsetsGeometry margin;
-  final EdgeInsets padding;
+
+  /// The padding around [child]
+  final EdgeInsetsGeometry padding;
+
+  /// The rounded corners of the card
+  ///
+  /// A circular border with a 4.0 radius is used by default
+  final BorderRadiusGeometry borderRadius;
+
+  /// The card's background color.
+  ///
+  /// If null, [ThemeData.cardColor] is used
   final Color? backgroundColor;
 
   @override
@@ -24,6 +38,7 @@ class CommandBarCard extends StatelessWidget {
       child: Card(
         padding: padding,
         backgroundColor: backgroundColor,
+        borderRadius: borderRadius,
         child: child,
       ),
     );
@@ -221,7 +236,7 @@ class _CommandBarState extends State<CommandBar> {
       overflowWidget = Flyout(
         content: (context) => FlyoutContent(
           constraints: const BoxConstraints(maxWidth: 250.0),
-          padding: const EdgeInsets.only(top: 8.0),
+          padding: const EdgeInsetsDirectional.only(top: 8.0),
           child: ListView(
             shrinkWrap: true,
             children: allSecondaryItems
@@ -513,7 +528,7 @@ class CommandBarButton extends CommandBarItem {
         );
       case CommandBarItemDisplayMode.inSecondary:
         return Padding(
-          padding: const EdgeInsets.only(right: 8.0, left: 8.0),
+          padding: const EdgeInsetsDirectional.only(end: 8.0, start: 8.0),
           child: FlyoutListTile(
             key: key,
             onPressed: onPressed,
@@ -575,7 +590,7 @@ class CommandBarSeparator extends CommandBarItem {
           style: DividerThemeData(
             thickness: thickness,
             decoration: color != null ? BoxDecoration(color: color) : null,
-            horizontalMargin: const EdgeInsets.only(bottom: 5.0),
+            horizontalMargin: const EdgeInsetsDirectional.only(bottom: 5.0),
           ),
         );
     }

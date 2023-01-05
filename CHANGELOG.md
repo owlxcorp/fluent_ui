@@ -1,3 +1,33 @@
+## 4.1.3
+
+- `FlyoutListTile` can be used outside of a flyout ([#650](https://github.com/bdlukaa/fluent_ui/issues/650))
+- Add uk localization ([#647](https://github.com/bdlukaa/fluent_ui/pull/647))
+- Add swedish localization ([#655](https://github.com/bdlukaa/fluent_ui/pull/655))
+- Add `key` parameter to `NavigationPaneItem` and all its instances ([#656](https://github.com/bdlukaa/fluent_ui/issues/656))
+- Ensure `fontFamily` is inherit in some widgets ([654](https://github.com/bdlukaa/fluent_ui/issues/654))
+- Add `Flyout.navigatorKey` ([#538](https://github.com/bdlukaa/fluent_ui/issues/538))
+- Add `Card.borderColor` ([#643](https://github.com/bdlukaa/fluent_ui/issues/643))
+
+## 4.1.2
+
+- `PageHeader` now gives appropriate bounds to its `commandBar` ([#642](https://github.com/bdlukaa/fluent_ui/issues/642))
+- Ensure `NavigationView` body state is not lost when resizing window
+- Ensure `TabView`' tabs' state are not lost when changing selected tab ([#607](https://github.com/bdlukaa/fluent_ui/pull/607))
+- Do not block text field tap ([#343](https://github.com/bdlukaa/fluent_ui/issues/343))
+- Do not duplicate `trailing` in `FlyoutContent` ([#487](https://github.com/bdlukaa/fluent_ui/issues/487))
+
+## 4.1.1
+
+- Ensure acrylic is updated only if it's mounted ([#634](https://github.com/bdlukaa/fluent_ui/issues/634))
+- Ensure the provided `startYear` and `endYear` in `DateTime` are used properly ([#627](https://github.com/bdlukaa/fluent_ui/issues/627))
+- Fix left arrow key not moving to parent item on collapsed `TreeViewItem` ([#632](https://github.com/bdlukaa/fluent_ui/issues/632)) 
+- Added `NavigationPane.scrollBehavior` ([#640](https://github.com/bdlukaa/fluent_ui/issues/640))
+- Added `CommandBarCard.borderRadius` ([#641](https://github.com/bdlukaa/fluent_ui/issues/641))
+- Ensure combobox scroll controller has a client attached before using it ([#620](https://github.com/bdlukaa/fluent_ui/issues/620))
+- Correctly use `TextFormBox.initialValue`
+- Added `TreeViewState.toggleItem`, which toggles the item expanded state ([#493](https://github.com/bdlukaa/fluent_ui/issues/493))
+- Ensure `NavigationView` pane items are brought into view when selected
+
 ## 4.1.0
 
 - Fixed `TreeView` selection state behavior for items that are not expanded ([#578](https://github.com/bdlukaa/fluent_ui/issues/578))

@@ -307,7 +307,11 @@ class _FluentTextSelectionToolbar extends StatelessWidget {
           elevation: 4.0,
           shape: RoundedRectangleBorder(borderRadius: radius),
           child: Container(
-            padding: const EdgeInsets.only(top: 5.0, left: 5.0, right: 5.0),
+            padding: const EdgeInsetsDirectional.only(
+              top: 5.0,
+              start: 5.0,
+              end: 5.0,
+            ),
             child: SizedBox(
               width: _kToolbarWidth,
               child: Column(
@@ -348,7 +352,7 @@ class _FluentTextSelectionToolbarButton extends StatelessWidget {
         final theme = FluentTheme.of(context);
         final radius = BorderRadius.circular(4.0);
         return Padding(
-          padding: const EdgeInsets.only(bottom: 5.0),
+          padding: const EdgeInsetsDirectional.only(bottom: 5.0),
           child: FocusBorder(
             focused: states.isFocused,
             renderOutside: true,
@@ -364,11 +368,11 @@ class _FluentTextSelectionToolbarButton extends StatelessWidget {
                   ),
                   borderRadius: radius,
                 ),
-                padding: const EdgeInsets.only(
+                padding: const EdgeInsetsDirectional.only(
                   top: 4.0,
                   bottom: 4.0,
-                  left: 10.0,
-                  right: 8.0,
+                  start: 10.0,
+                  end: 8.0,
                 ),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
                   Padding(
@@ -381,7 +385,6 @@ class _FluentTextSelectionToolbarButton extends StatelessWidget {
                       child: Text(
                         text,
                         style: TextStyle(
-                          inherit: false,
                           fontSize: 14.0,
                           letterSpacing: -0.15,
                           color: theme.inactiveColor,
@@ -392,7 +395,6 @@ class _FluentTextSelectionToolbarButton extends StatelessWidget {
                   Text(
                     shortcut,
                     style: TextStyle(
-                      inherit: false,
                       fontSize: 12.0,
                       color: theme.borderInputColor,
                       height: 0.7,
