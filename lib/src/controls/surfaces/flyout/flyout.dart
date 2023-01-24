@@ -158,7 +158,7 @@ class Flyout extends StatefulWidget {
   final NavigatorKey? navigatorKey;
 
   @override
-  _FlyoutState createState() => _FlyoutState();
+  State<Flyout> createState() => _FlyoutState();
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -274,7 +274,6 @@ class _FlyoutState extends State<Flyout> {
         );
       case FlyoutOpenMode.longHover:
         return MouseRegion(
-          opaque: true,
           onEnter: (event) {
             longHoverTimer = Timer(widget.longHoverDuration, controller.open);
           },

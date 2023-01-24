@@ -156,7 +156,7 @@ class CommandBar extends StatefulWidget {
         super(key: key);
 
   @override
-  _CommandBarState createState() => _CommandBarState();
+  State<CommandBar> createState() => _CommandBarState();
 }
 
 class _CommandBarState extends State<CommandBar> {
@@ -423,7 +423,7 @@ class CommandBarBuilderItem extends CommandBarItem {
   Widget build(BuildContext context, CommandBarItemDisplayMode displayMode) {
     // First, build the widget for the wrappedItem in the given displayMode,
     // as it is always passed to the callback
-    Widget w = wrappedItem.build(context, displayMode);
+    var w = wrappedItem.build(context, displayMode);
     return builder(context, displayMode, w);
   }
 }
@@ -488,9 +488,9 @@ class CommandBarButton extends CommandBarItem {
     switch (displayMode) {
       case CommandBarItemDisplayMode.inPrimary:
       case CommandBarItemDisplayMode.inPrimaryCompact:
-        final showIcon = (icon != null);
-        final showLabel = (label != null &&
-            (displayMode == CommandBarItemDisplayMode.inPrimary || !showIcon));
+        final showIcon = icon != null;
+        final showLabel = label != null &&
+            (displayMode == CommandBarItemDisplayMode.inPrimary || !showIcon);
         return IconButton(
           key: key,
           onPressed: onPressed,
@@ -576,17 +576,12 @@ class CommandBarSeparator extends CommandBarItem {
               style: DividerThemeData(
                 thickness: thickness,
                 decoration: color != null ? BoxDecoration(color: color) : null,
-                verticalMargin: const EdgeInsets.symmetric(
-                  vertical: 0.0,
-                  horizontal: 0.0,
-                ),
               ),
             ),
           ),
         );
       case CommandBarItemDisplayMode.inSecondary:
         return Divider(
-          direction: Axis.horizontal,
           style: DividerThemeData(
             thickness: thickness,
             decoration: color != null ? BoxDecoration(color: color) : null,

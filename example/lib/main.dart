@@ -127,7 +127,7 @@ class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> with WindowListener {
@@ -135,9 +135,8 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
 
   int index = 0;
 
-  final viewKey = GlobalKey();
-
-  final searchKey = GlobalKey();
+  final viewKey = GlobalKey(debugLabel: 'Navigation View Key');
+  final searchKey = GlobalKey(debugLabel: 'Search Bar Key');
   final searchFocusNode = FocusNode();
   final searchController = TextEditingController();
 
@@ -466,6 +465,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
           key: searchKey,
           focusNode: searchFocusNode,
           controller: searchController,
+          unfocusedColor: Colors.transparent,
           items: originalItems.whereType<PaneItem>().map((item) {
             assert(item.title is Text);
             final text = (item.title as Text).data!;
@@ -485,6 +485,12 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
             );
           }).toList(),
           placeholder: 'Search',
+          trailingIcon: IgnorePointer(
+            child: IconButton(
+              onPressed: () {},
+              icon: const Icon(FluentIcons.search),
+            ),
+          ),
         ),
         autoSuggestBoxReplacement: const Icon(FluentIcons.search),
         footerItems: footerItems,

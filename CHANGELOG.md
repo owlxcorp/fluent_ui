@@ -1,3 +1,24 @@
+## 4.1.5
+
+- Add `AutoSuggestBox.maxPopupHeight` ([#677](https://github.com/bdlukaa/fluent_ui/issues/677))
+- Fix assertion in `NavigationViewState` if no pane was currently selected ([#678](https://github.com/bdlukaa/fluent_ui/issues/678))
+- Make `NavigationView.paneBodyBuilder` responsible for state management of the widget it returns, allowing `paneBodyBuilder` to return an `IndexedStack` (common use case) ([#679](https://github.com/bdlukaa/fluent_ui/issues/679))
+- Added support for Belarusian language ([#686](https://github.com/bdlukaa/fluent_ui/pull/686))
+- Added missing German translation for `minute`, `hour`, `day`, `month`, and `year` 
+
+## 4.1.4
+
+- Avoid overflow in `DatePicker` and `TimePicker` popup ([#663](https://github.com/bdlukaa/fluent_ui/issues/663))
+- Ensure sticky indicator is mounted before updating ([#670](https://github.com/bdlukaa/fluent_ui/issues/670))
+- Date and Time pickers popup are now positioned correctly in RTL mode ([#675](https://github.com/bdlukaa/fluent_ui/issues/675))
+- It's now possible to navigate through `AutoSuggestBox` items by long pressing arrow up and down keys
+- Do not clear focus scope after selecting an item in `AutoSuggestBox` ([#671](https://github.com/bdlukaa/fluent_ui/issues/671))
+- `AutoSuggestBox`'s `trailingIcon` now comes after the close button
+- **MINOR BREAK** `TextBox.clearGlobalKey` was removed, since it was not used
+- Add `AutoSuggestBox.unfocusedColor` and `TextFormBox.unfocusedColor`
+- Implement `displayInfoBar`, which shows an info bar as an overlay ([#673](https://github.com/bdlukaa/fluent_ui/issues/673))
+- Implement `ThemeData.extensions` ([#674](https://github.com/bdlukaa/fluent_ui/issues/674))
+
 ## 4.1.3
 
 - `FlyoutListTile` can be used outside of a flyout ([#650](https://github.com/bdlukaa/fluent_ui/issues/650))
