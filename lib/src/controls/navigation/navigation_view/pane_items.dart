@@ -681,7 +681,7 @@ class __PaneItemExpanderState extends State<_PaneItemExpander>
           context,
           identifier: 'paneItemExpanderOpen$index',
         ) as bool? ??
-        false;
+        true;
 
     if (_open) {
       controller.value = 1;
