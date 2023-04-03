@@ -7,6 +7,7 @@ import 'package:intl/intl.dart' as intl;
 
 import 'fluent_localizations_ar.dart';
 import 'fluent_localizations_be.dart';
+import 'fluent_localizations_bn.dart';
 import 'fluent_localizations_cs.dart';
 import 'fluent_localizations_de.dart';
 import 'fluent_localizations_el.dart';
@@ -29,6 +30,7 @@ import 'fluent_localizations_pt.dart';
 import 'fluent_localizations_ro.dart';
 import 'fluent_localizations_ru.dart';
 import 'fluent_localizations_sv.dart';
+import 'fluent_localizations_ta.dart';
 import 'fluent_localizations_th.dart';
 import 'fluent_localizations_tr.dart';
 import 'fluent_localizations_uk.dart';
@@ -122,6 +124,7 @@ abstract class FluentLocalizations {
     Locale('en'),
     Locale('ar'),
     Locale('be'),
+    Locale('bn'),
     Locale('cs'),
     Locale('de'),
     Locale('el'),
@@ -143,6 +146,7 @@ abstract class FluentLocalizations {
     Locale('ro'),
     Locale('ru'),
     Locale('sv'),
+    Locale('ta'),
     Locale('th'),
     Locale('tr'),
     Locale('uk'),
@@ -352,6 +356,7 @@ class _FluentLocalizationsDelegate
   bool isSupported(Locale locale) => <String>[
         'ar',
         'be',
+        'bn',
         'cs',
         'de',
         'el',
@@ -374,6 +379,7 @@ class _FluentLocalizationsDelegate
         'ro',
         'ru',
         'sv',
+        'ta',
         'th',
         'tr',
         'uk',
@@ -404,6 +410,8 @@ FluentLocalizations lookupFluentLocalizations(Locale locale) {
       return FluentLocalizationsAr();
     case 'be':
       return FluentLocalizationsBe();
+    case 'bn':
+      return FluentLocalizationsBn();
     case 'cs':
       return FluentLocalizationsCs();
     case 'de':
@@ -448,6 +456,8 @@ FluentLocalizations lookupFluentLocalizations(Locale locale) {
       return FluentLocalizationsRu();
     case 'sv':
       return FluentLocalizationsSv();
+    case 'ta':
+      return FluentLocalizationsTa();
     case 'th':
       return FluentLocalizationsTh();
     case 'tr':
