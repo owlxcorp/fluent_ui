@@ -538,22 +538,26 @@ class CommandBarButton extends CommandBarItem {
               );
             }),
           ),
-          icon: Row(
-            mainAxisSize: MainAxisSize.min,
+          icon: Column(
             children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (showIcon)
+                    IconTheme.merge(
+                      data: const IconThemeData(size: 16),
+                      child: icon!,
+                    ),
+                  if (showIcon && showLabel) const SizedBox(width: 10),
+                  if (showLabel) label!,
+                  if (flyoutWidget != null)
+                    const Padding(
+                      padding: EdgeInsets.only(left: 10),
+                      child: Icon(FluentIcons.chevron_down_small, size: 8),
+                    ),
+                ],
+              ),
               if (flyoutWidget != null) flyoutWidget!,
-              if (showIcon)
-                IconTheme.merge(
-                  data: const IconThemeData(size: 16),
-                  child: icon!,
-                ),
-              if (showIcon && showLabel) const SizedBox(width: 10),
-              if (showLabel) label!,
-              if (flyoutWidget != null)
-                const Padding(
-                  padding: EdgeInsets.only(left: 10),
-                  child: Icon(FluentIcons.chevron_down_small, size: 8),
-                ),
             ],
           ),
         );
