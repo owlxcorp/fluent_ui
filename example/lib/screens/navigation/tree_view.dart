@@ -35,7 +35,7 @@ class _TreeViewPageState extends State<TreeViewPage> with PageMixin {
             selectionMode: TreeViewSelectionMode.multiple,
             shrinkWrap: true,
             items: items,
-            onItemInvoked: (item, reason) async =>
+            onItemInvoked: (_, item, reason) async =>
                 debugPrint('onItemInvoked(reason=$reason): $item'),
             onSelectionChanged: (selectedItems) async => debugPrint(
                 'onSelectionChanged: ${selectedItems.map((i) => i.value)}'),
@@ -112,7 +112,7 @@ TreeView(
               TreeView(
                 shrinkWrap: true,
                 items: lazyItems,
-                onItemInvoked: (item, reason) async =>
+                onItemInvoked: (_, item, reason) async =>
                     debugPrint('onItemInvoked(reason=$reason): $item'),
                 onSelectionChanged: (selectedItems) async => debugPrint(
                     'onSelectionChanged: ${selectedItems.map((i) => i.value)}'),

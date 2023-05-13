@@ -453,6 +453,7 @@ typedef TreeViewSelectionChangedCallback = Future<void> Function(
 ///
 /// Used by [TreeView.onItemInvoked]
 typedef TreeViewItemInvoked = Future<void> Function(
+  TreeViewState treeViewState,
   TreeViewItem item,
   TreeViewItemInvokeReason reason,
 );
@@ -520,7 +521,8 @@ class TreeView extends StatefulWidget {
     this.narrowSpacing = false,
     this.includePartiallySelectedItems = false,
     this.deselectParentWhenChildrenDeselected = true,
-  }) : assert(items.length > 0, 'There must be at least one item');
+    this.alwaysTiggerSelectionToggleForItemsWithoutChildrenSelection = false,
+  })  : assert(items.length > 0, 'There must be at least one item');
 
   /// The items of the tree view.
   ///
@@ -537,6 +539,11 @@ class TreeView extends StatefulWidget {
   /// are deselected. If you disable this behavior, also consider if you
   /// want to set [includePartiallySelectedItems] to true.
   final bool deselectParentWhenChildrenDeselected;
+
+  /// If [selectionMode] is [TreeViewSelectionMode.multiple], indicates if
+  /// a [TreeViewItemInvokeReason.pressed] event on a bottom-most child will
+  /// also trigger a [TreeViewItemInvokeReason.selectionToggle].
+  final bool alwaysTiggerSelectionToggleForItemsWithoutChildrenSelection;
 
   /// Called when an item is invoked
   ///
@@ -714,6 +721,9 @@ class TreeViewState extends State<TreeView> with AutomaticKeepAliveClientMixin {
                   onSecondaryTap: (details) {},
                   onExpandToggle: () {},
                   loadingWidgetFallback: widget.loadingWidget,
+                  alwaysTiggerSelectionToggleForItemsWithoutChildrenSelection:
+                      widget
+                          .alwaysTiggerSelectionToggleForItemsWithoutChildrenSelection,
                 )
               : null,
           itemCount: _items.length,
@@ -788,6 +798,8 @@ class TreeViewState extends State<TreeView> with AutomaticKeepAliveClientMixin {
               },
               onInvoked: (reason) => _invokeItem(item, reason),
               loadingWidgetFallback: widget.loadingWidget,
+              alwaysTiggerSelectionToggleForItemsWithoutChildrenSelection: widget
+                  .alwaysTiggerSelectionToggleForItemsWithoutChildrenSelection,
             );
           },
         ),
@@ -802,7 +814,7 @@ class TreeViewState extends State<TreeView> with AutomaticKeepAliveClientMixin {
     if (widget.onItemInvoked == null && item.onInvoked == null) return;
 
     await Future.wait([
-      if (widget.onItemInvoked != null) widget.onItemInvoked!(item, reason),
+      if (widget.onItemInvoked != null) widget.onItemInvoked!(this, item, reason),
       if (item.onInvoked != null) item.onInvoked!(item, reason),
     ]);
 
@@ -832,6 +844,7 @@ class _TreeViewItem extends StatelessWidget {
     required this.onInvoked,
     required this.loadingWidgetFallback,
     required this.narrowSpacing,
+    required this.alwaysTiggerSelectionToggleForItemsWithoutChildrenSelection,
   });
 
   final TreeViewItem item;
@@ -842,6 +855,7 @@ class _TreeViewItem extends StatelessWidget {
   final void Function(TreeViewItemInvokeReason reason) onInvoked;
   final Widget loadingWidgetFallback;
   final bool narrowSpacing;
+  final bool alwaysTiggerSelectionToggleForItemsWithoutChildrenSelection;
 
   @override
   Widget build(BuildContext context) {
@@ -891,6 +905,10 @@ class _TreeViewItem extends StatelessWidget {
                 onInvoked(TreeViewItemInvokeReason.pressed);
               }
             : () {
+                if (alwaysTiggerSelectionToggleForItemsWithoutChildrenSelection &&
+                    item.children.isEmpty) {
+                  onSelect();
+                }
                 onInvoked(TreeViewItemInvokeReason.pressed);
               },
         autofocus: item.autofocus,
