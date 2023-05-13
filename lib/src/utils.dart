@@ -142,6 +142,9 @@ extension StringExtension on String {
   ///
   /// january -> January
   String uppercaseFirst() {
+    if (isEmpty) {
+      return this;
+    }
     final first = substring(0, 1);
     return first.toUpperCase() + substring(1);
   }
