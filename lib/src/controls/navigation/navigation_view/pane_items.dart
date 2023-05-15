@@ -959,7 +959,7 @@ class _PaneItemExpanderMenuItem extends MenuFlyoutItemBase {
   }
 }
 
-class _PaneItemExpanderItem extends LinkedListEntry<_PaneItemExpanderItem> {
+base class _PaneItemExpanderItem extends LinkedListEntry<_PaneItemExpanderItem> {
   final PaneItem parent;
   final NavigationPaneItem expanderItem;
   final List<NavigationPaneItem> siblings;
