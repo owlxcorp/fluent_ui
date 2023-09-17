@@ -157,6 +157,27 @@ class PasswordBox extends StatefulWidget {
   /// {@macro flutter.material.InputDecorator.textAlignVertical}
   final TextAlignVertical? textAlignVertical;
 
+  /// The style to use for the text being edited.
+  ///
+  /// Also serves as a base for the [placeholder] text's style.
+  ///
+  /// Defaults to the standard font style from [FluentTheme] if null.
+  final TextStyle? style;
+
+  /// Padding around the text entry area between the [prefix] and [suffix].
+  ///
+  /// Defaults to [kTextBoxPadding]
+  final EdgeInsetsGeometry padding;
+
+  /// {@macro flutter.widgets.editableText.scrollPadding}
+  final EdgeInsets scrollPadding;
+
+  /// {@macro flutter.widgets.editableText.scrollController}
+  final ScrollController? scrollController;
+
+  /// {@macro flutter.widgets.editableText.scrollPhysics}
+  final ScrollPhysics? scrollPhysics;
+
   /// Creates a password box
   const PasswordBox({
     super.key,
@@ -185,6 +206,11 @@ class PasswordBox extends StatefulWidget {
     this.keyboardAppearance,
     this.textAlign = TextAlign.start,
     this.textAlignVertical,
+    this.style,
+    this.padding = kTextBoxPadding,
+    this.scrollController,
+    this.scrollPadding = const EdgeInsets.all(20.0),
+    this.scrollPhysics,
   });
 
   @override
@@ -356,6 +382,11 @@ class _PasswordBoxState extends State<PasswordBox> {
       keyboardAppearance: widget.keyboardAppearance,
       textAlign: widget.textAlign,
       textAlignVertical: widget.textAlignVertical,
+      style: widget.style,
+      padding: widget.padding,
+      scrollController: widget.scrollController,
+      scrollPadding: widget.scrollPadding,
+      scrollPhysics: widget.scrollPhysics,
     );
   }
 }
@@ -388,9 +419,9 @@ class _PasswordBoxState extends State<PasswordBox> {
 ///
 /// See also:
 ///
-///   * [PasswordBox], which is the underlying text field without the [Form]
+///   * [PasswordBox], which is the underlying password box without the [Form]
 ///    integration.
-///   * <https://docs.microsoft.com/en-us/windows/apps/design/controls/text-box>
+///   * <https://docs.microsoft.com/en-us/windows/apps/design/controls/password-box>
 class PasswordFormBox extends ControllableFormBox {
   /// Creates a [FormField] that contains a [PasswordBox].
   ///
