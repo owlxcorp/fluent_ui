@@ -340,7 +340,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
         body: e.body,
         onTap: () {
           final path = (e.key as ValueKey).value;
-          if (GoRouterState.of(context).location.toString() != path) {
+          if (GoRouterState.of(context).uri.toString() != path) {
             context.go(path);
           }
           e.onTap?.call();
@@ -357,7 +357,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
       title: const Text('Settings'),
       body: const SizedBox.shrink(),
       onTap: () {
-        if (GoRouterState.of(context).location.toString() != '/settings') {
+        if (GoRouterState.of(context).uri.toString() != '/settings') {
           context.go('/settings');
         }
       },
@@ -385,7 +385,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
   }
 
   int _calculateSelectedIndex(BuildContext context) {
-    final location = GoRouterState.of(context).location.toString();
+    final location = GoRouterState.of(context).uri.toString();
     int indexOriginal = originalItems
         .where((item) => item.key != null)
         .toList()
