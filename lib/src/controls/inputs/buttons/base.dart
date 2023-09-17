@@ -11,12 +11,12 @@ import 'package:flutter/foundation.dart';
 ///
 ///   * <https://developer.microsoft.com/en-us/fluentui#/controls/android/button>
 ///   * <https://developer.microsoft.com/en-us/fluentui#/controls/web/button>
-///   * [TextButton], a borderless button with mainly text-based content
+///   * [HyperlinkButton], a borderless button with mainly text-based content
 ///   * [OutlinedButton], an outlined button
 ///   * [FilledButton], a colored button
 abstract class BaseButton extends StatefulWidget {
   const BaseButton({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.onLongPress,
     required this.onTapDown,
@@ -26,7 +26,7 @@ abstract class BaseButton extends StatefulWidget {
     required this.autofocus,
     required this.child,
     required this.focusable,
-  }) : super(key: key);
+  });
 
   /// Called when the button is tapped or otherwise activated.
   ///
@@ -132,7 +132,7 @@ class _BaseButtonState extends State<BaseButton> {
       return widgetValue ?? themeValue ?? defaultValue;
     }
 
-    final Widget result = HoverButton(
+    return HoverButton(
       autofocus: widget.autofocus,
       focusNode: widget.focusNode,
       onPressed: widget.onPressed,
@@ -199,23 +199,23 @@ class _BaseButtonState extends State<BaseButton> {
               child: AnimatedDefaultTextStyle(
                 duration: FluentTheme.of(context).fastAnimationDuration,
                 curve: FluentTheme.of(context).animationCurve,
-                style: (resolvedTextStyle ?? const TextStyle())
-                    .copyWith(color: resolvedForegroundColor),
+                style: DefaultTextStyle.of(context).style.merge(
+                      (resolvedTextStyle ?? const TextStyle())
+                          .copyWith(color: resolvedForegroundColor),
+                    ),
                 textAlign: TextAlign.center,
                 child: widget.child,
               ),
             ),
           ),
         );
-        return FocusBorder(focused: states.isFocused, child: result);
+        return Semantics(
+          container: true,
+          button: true,
+          enabled: widget.enabled,
+          child: FocusBorder(focused: states.isFocused, child: result),
+        );
       },
-    );
-
-    return Semantics(
-      container: true,
-      button: true,
-      enabled: widget.enabled,
-      child: result,
     );
   }
 }
