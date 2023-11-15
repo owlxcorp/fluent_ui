@@ -530,7 +530,7 @@ class TreeView extends StatefulWidget {
     this.narrowSpacing = false,
     this.includePartiallySelectedItems = false,
     this.deselectParentWhenChildrenDeselected = true,
-  }) : assert(items.length > 0, 'There must be at least one item');
+  });
 
   /// The items of the tree view.
   ///
@@ -635,7 +635,8 @@ class TreeView extends StatefulWidget {
   final bool usePrototypeItem;
 
   /// Whether or not to have narrow spacing between the contents of each item.
-  /// The default value is `false`.
+  ///
+  /// Defaults to `false`.
   final bool narrowSpacing;
 
   @override
@@ -645,9 +646,22 @@ class TreeView extends StatefulWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties
-      ..add(EnumProperty('selectionMode', selectionMode,
-          defaultValue: TreeViewSelectionMode.none))
-      ..add(IterableProperty<TreeViewItem>('items', items));
+      ..add(EnumProperty(
+        'selectionMode',
+        selectionMode,
+        defaultValue: TreeViewSelectionMode.none,
+      ))
+      ..add(IterableProperty<TreeViewItem>('items', items))
+      ..add(FlagProperty(
+        'includePartiallySelectedItems',
+        value: includePartiallySelectedItems,
+        defaultValue: false,
+      ))
+      ..add(FlagProperty(
+        'narrowSpacing',
+        value: narrowSpacing,
+        defaultValue: false,
+      ));
   }
 }
 
@@ -970,9 +984,11 @@ class _TreeViewItem extends StatelessWidget {
             child: Stack(children: [
               // Indentation and selection indicator for single selection mode.
               Container(
-                height: selectionMode == TreeViewSelectionMode.multiple
-                    ? 28.0
-                    : 26.0,
+                constraints: BoxConstraints(
+                  minHeight: selectionMode == TreeViewSelectionMode.multiple
+                      ? 28.0
+                      : 26.0,
+                ),
                 padding: EdgeInsetsDirectional.only(
                   start: selectionMode == TreeViewSelectionMode.multiple
                       ? !narrowSpacing
@@ -1031,7 +1047,6 @@ class _TreeViewItem extends StatelessWidget {
                           // chevron's (max) width.
                           width: 24,
                           // The hitbox fills the available height.
-                          height: double.infinity,
                           decoration: BoxDecoration(
                             color: Colors.transparent,
                             borderRadius: BorderRadius.circular(5.0),
