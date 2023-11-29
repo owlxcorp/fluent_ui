@@ -1,6 +1,12 @@
-## [next]
+## 4.8.1
 
-* Correctly paint buttons borders ([#956](https://github.com/bdlukaa/fluent_ui/pull/956))
+* feat: Added `NavigationPane.toggleable` ([#973](https://github.com/bdlukaa/fluent_ui/issues/973))
+* feat: `NumberBox.onTextChange` ([#972](https://github.com/bdlukaa/fluent_ui/issues/972))
+* fix: `TextBox.expands` correctly expands on unbounded areas ([#960](https://github.com/bdlukaa/fluent_ui/issues/960))
+
+## 4.8.0
+
+* fix: Correctly paint buttons borders ([#956](https://github.com/bdlukaa/fluent_ui/pull/956))
 * **MINOR BREAKING** Removed `ButtonStyle.border`. Use `ButtonStyle.shape` instead:
   Before:
   ```dart
@@ -25,6 +31,9 @@
 * **BREAKING** Removed `BottomSheet` and its related widgets and functions.
 * **BREAKING** Removed `Snackbar`, `showSnackbar` and their related widgets. Use `InfoBar` and `displayInfoBar` instead.
 * fix: do not close `InfoBar` twice ([#955](https://github.com/bdlukaa/fluent_ui/issues/955))
+* feat: add Kurdish locale ([#962](https://github.com/bdlukaa/fluent_ui/pull/962))
+* fix: review `debugFillProperties` on widgets ([#974](https://github.com/bdlukaa/fluent_ui/issues/974))
+* fix: Date and Time pickers when localization is not English ([#961](https://github.com/bdlukaa/fluent_ui/issues/961))
 
 ## 4.7.7
 
