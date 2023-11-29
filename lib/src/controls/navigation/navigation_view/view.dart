@@ -536,15 +536,21 @@ class NavigationViewState extends State<NavigationView> {
                           if (openedWithoutOverlay) {
                             return Container(
                               key: _overlayKey,
-                              margin: const EdgeInsets.symmetric(vertical: 1.0),
-                              child: _OpenNavigationPane(
-                                theme: theme,
-                                pane: pane,
-                                paneKey: _panelKey,
-                                listKey: _listKey,
-                                onToggle: toggleCompactOpenMode,
-                                initiallyOpen: true,
-                                onAnimationEnd: _animationEndCallback,
+                              backgroundColor: theme.backgroundColor,
+                              child: Container(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 1.0),
+                                child: _OpenNavigationPane(
+                                  theme: theme,
+                                  pane: pane,
+                                  paneKey: _panelKey,
+                                  listKey: _listKey,
+                                  onToggle: pane.toggleable
+                                      ? toggleCompactOpenMode
+                                      : null,
+                                  initiallyOpen: true,
+                                  onAnimationEnd: _animationEndCallback,
+                                ),
                               ),
                             );
                           } else {
@@ -554,7 +560,9 @@ class NavigationViewState extends State<NavigationView> {
                                 pane: pane,
                                 paneKey: _panelKey,
                                 listKey: _listKey,
-                                onToggle: toggleCompactOpenMode,
+                                onToggle: pane.toggleable
+                                    ? toggleCompactOpenMode
+                                    : null,
                                 onOpenSearch: widget.onOpenSearch,
                                 onAnimationEnd: _animationEndCallback,
                               ),
