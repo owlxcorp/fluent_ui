@@ -1,3 +1,15 @@
+## 4.8.3
+
+* fix: `ScaffoldPage.padding` is correctly applied ([#986](https://github.com/bdlukaa/fluent_ui/issues/986))
+* fix: `SliderThemeData.labelForegroundColor` is correctly applied ([#1000](https://github.com/bdlukaa/fluent_ui/issues/1000))
+* feat: `NavigationView.onDisplayModeChanged` ([#998](https://github.com/bdlukaa/fluent_ui/issues/998))
+
+## 4.8.2
+
+* fix: The `MenuFlyoutSubItem` in the `DropDownButton` was not displaying when hovered or pressed. ([#964](https://github.com/bdlukaa/fluent_ui/pull/964))
+* fix: Added `enabled` to `PaneItem.copyWith` ([#980](https://github.com/bdlukaa/fluent_ui/issues/980))
+* feat: Added `barrierRecognizer` to `FlyoutController.showFlyout` ([#983](https://github.com/bdlukaa/fluent_ui/issues/983))
+
 ## 4.8.1
 
 * feat: Added `NavigationPane.toggleable` ([#973](https://github.com/bdlukaa/fluent_ui/issues/973))
