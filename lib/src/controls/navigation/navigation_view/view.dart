@@ -563,7 +563,8 @@ class NavigationViewState extends State<NavigationView> {
                           if (openedWithoutOverlay) {
                             return Container(
                               key: _overlayKey,
-                              backgroundColor: theme.backgroundColor,
+                              decoration:
+                                  BoxDecoration(color: theme.backgroundColor),
                               child: Container(
                                 margin:
                                     const EdgeInsets.symmetric(vertical: 1.0),
