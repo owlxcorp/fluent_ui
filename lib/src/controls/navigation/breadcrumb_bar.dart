@@ -171,12 +171,12 @@ class BreadcrumbBarState<T> extends State<BreadcrumbBar<T>> {
     final items = isReversed ? widget.items.reversed.toList() : widget.items;
 
     final chevron = Padding(
-      padding: const EdgeInsetsDirectional.symmetric(horizontal: 6.0),
+      padding: const EdgeInsetsDirectional.symmetric(horizontal: 8.0),
       child: Icon(
         textDirection == TextDirection.ltr
             ? FluentIcons.chevron_right
             : FluentIcons.chevron_left,
-        size: 8.0,
+        size: 10.0,
         color: theme.resources.textFillColorPrimary,
       ),
     );
