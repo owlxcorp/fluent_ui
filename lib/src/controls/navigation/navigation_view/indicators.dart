@@ -79,7 +79,11 @@ class NavigationIndicatorState<T extends NavigationIndicator> extends State<T> {
   }
 
   bool get isSelected {
-    return pane.isSelected(item);
+    try {
+      return pane.isSelected(item);
+    } catch (e) {
+      return false;
+    }
   }
 
   Axis get axis {
