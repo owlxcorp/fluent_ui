@@ -362,6 +362,7 @@ class EditableComboboxFormField<T> extends FormField<T> {
     AlignmentGeometry alignment = AlignmentDirectional.centerStart,
     BorderRadius? borderRadius,
     required SubmitEditableCombobox onFieldSubmitted,
+    ValueChanged<String>? onTextChanged,
     // When adding new arguments, consider adding similar arguments to
     // EditableComboBox.
   }) : super(builder: (FormFieldState<T> field) {
@@ -398,6 +399,12 @@ class EditableComboboxFormField<T> extends FormField<T> {
                     autofocus: autofocus,
                     popupColor: popupColor,
                     onFieldSubmitted: onFieldSubmitted,
+                    onTextChanged: onTextChanged != null
+                        ? (value) {
+                            onTextChanged(value);
+                            if (value is T) state.didChange(value as T);
+                          }
+                        : null,
                   ),
                 ),
               );
