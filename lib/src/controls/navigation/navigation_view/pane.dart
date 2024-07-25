@@ -1310,6 +1310,7 @@ class _OpenNavigationPaneState extends State<_OpenNavigationPane>
       key: widget.paneKey,
       width: paneWidth,
       onEnd: widget.onAnimationEnd,
+      color: theme.backgroundColor,
       child: LayoutBuilder(builder: (context, constraints) {
         final width = constraints.maxWidth;
         return Column(
