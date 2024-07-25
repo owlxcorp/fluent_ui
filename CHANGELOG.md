@@ -1,8 +1,96 @@
-## NEXT
+## next
+
+- feat: ¹ `NumberBox` now supports precision greater than 4. ² Add `NumberBox.pattern`, `NumberBox.formatter`, `NumberBox.format` ([#1080](https://github.com/bdlukaa/fluent_ui/pull/1080))
+* fix: Resolved issue where `PaneItem` within `PaneItemExpander` remained accessible in `NavigationPane` compact mode ([#1081](https://github.com/bdlukaa/fluent_ui/issues/1081))
+* fix: Correct number of days on `DatePicker` popup ([#1049](https://github.com/bdlukaa/fluent_ui/issues/1049))
+* feat: Create `PaneItemWidgetAdapter` ([#1087](https://github.com/bdlukaa/fluent_ui/issues/1087))
+
+## 4.9.0
+
+* fix: ¹ `DropDownButton.closeAfterClick` is now correctly applied. ² Added `MenuFlyoutItem.closeAfterClick`, which defaults to `true`. ([#1016](https://github.com/bdlukaa/fluent_ui/issues/1016))
+* fix: `MenuFlyoutSubItem` does not close when pressed ([#1037](https://github.com/bdlukaa/fluent_ui/issues/1037))
+* fix: Make `ScaffoldPage` opaque ([#1048](https://github.com/bdlukaa/fluent_ui/issues/1048))
 * fix: Scroll issue in `DatePicker`. ([#1054](https://github.com/bdlukaa/fluent_ui/issues/1054))
 * feat: Add `NumberBox.textInputAction` and `NumberBox.onEditingComplete` ([#1063](https://github.com/bdlukaa/fluent_ui/pull/1063))
+* fix: `NumberBox` does not calls a rebuild when it is already building ([#1064](https://github.com/bdlukaa/fluent_ui/issues/1064))
 * feat: Add `Tab.color`, `Tab.selectedColor` and `Tab.outlineColor` to TabView  ([#1068](https://github.com/bdlukaa/fluent_ui/pull/1068))
 * feat: Added `NavigationView.onItemPressed` callback, called when the item is on tap ([#1067](https://github.com/bdlukaa/fluent_ui/pull/1067))
+* fix: Mark `MenuFlyoutItem` as disabled when `.onPressed` is `null` ([#1074](https://github.com/bdlukaa/fluent_ui/issues/1074))
+* **BREAKING** feat: Removed `ButtonState`, `ButtonStates` and their related classes. Use `WidgetStateProperty`, `WidgetState` instead. ([#1075](https://github.com/bdlukaa/fluent_ui/issues/1075))
+  Before:
+
+  ```dart
+  Button(
+    style: ButtonStyle(
+      shape: ButtonState.all(RoundedRectangleBorder(...)),
+      backgroundColor: ButtonState.resolveWith((states) {
+        if (states.isPressed) {
+          return Colors.blue.shade900;
+        }
+        return Colors.blue;
+      }),
+      foregroundColor: ButtonState.resolveWith((states) {
+        return ButtonState.forStates<Color>(
+          states,
+          disabled: Colors.grey,
+          hovered: Colors.white.withOpacity(0.8),
+          pressed: Colors.white.withOpacity(0.6),
+        );
+      }),
+    ),
+  ),
+  ```
+
+  After:
+
+  ```dart
+  Button(
+    style: ButtonStyle(
+      shape: WidgetStatePropertyAll(RoundedRectangleBorder(...)),
+      backgroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.isPressed) {
+          return Colors.blue.shade900;
+        }
+        return Colors.blue;
+      }),
+      foregroundColor: WidgetStateProperty.resolveWith((states) {
+        return WidgetStateExtension.forStates<Color>(
+          states,
+          disabled: Colors.grey,
+          hovered: Colors.white.withOpacity(0.8),
+          pressed: Colors.white.withOpacity(0.6),
+        );
+      }),
+    ),
+  ),
+  ```
+* fix: Do not dismiss Scrollbar if it is still being pressed ([#1077](https://github.com/bdlukaa/fluent_ui/issues/1077))
+* feat: Make `Tab` a widget that can be overridable ([#1050](https://github.com/bdlukaa/fluent_ui/issues/1050))
+  To create a custom Tab, you can now extend `Tab`:
+
+  ```dart
+  class MyCustomTab extends Tab {
+    MyCustomTab({super.key, required super.text, required super.body});
+
+    @override
+    State<Tab> createState() => MyCustomTabState();
+  }
+
+  class MyCustomTabState extends TabState {
+    @override
+    Widget build(BuildContext context) {
+      super.build(context);
+      return ColoredBox(
+        color: Colors.red,
+        child: super.build(context),
+      );
+    }
+  }
+  ```
+
+  Explore the `TabState` reference to see all the available methods you can override.
+* feat: Deprecate `TabView.addIconData` and `TabView.addIconBuilder`. Use `TabView.newTabIcon` instead.
+* fix: `TabView.closeDelayDuration` default value is now 1 second.
 
 ## 4.8.7
 

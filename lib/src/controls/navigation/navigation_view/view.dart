@@ -153,9 +153,9 @@ class NavigationView extends StatefulWidget {
   /// Get useful info about the current navigation view.
   ///
   /// As a normal user, you will rarely need this information.
-  static _InheritedNavigationView dataOf(BuildContext context) {
+  static InheritedNavigationView dataOf(BuildContext context) {
     return context
-        .dependOnInheritedWidgetOfExactType<_InheritedNavigationView>()!;
+        .dependOnInheritedWidgetOfExactType<InheritedNavigationView>()!;
   }
 
   @override
@@ -777,13 +777,16 @@ class NavigationViewState extends State<NavigationView> {
         return const SizedBox.shrink();
       }
 
-      return _InheritedNavigationView(
-        displayMode: _compactOverlayOpen ? PaneDisplayMode.open : displayMode,
-        minimalPaneOpen: minimalPaneOpen,
-        pane: widget.pane,
-        previousItemIndex: _previousItemIndex,
-        isTransitioning: _isTransitioning,
-        child: PaneItemKeys(keys: _itemKeys, child: paneResult),
+      return Container(
+        color: theme.backgroundColor,
+        child: InheritedNavigationView(
+          displayMode: _compactOverlayOpen ? PaneDisplayMode.open : displayMode,
+          minimalPaneOpen: minimalPaneOpen,
+          pane: widget.pane,
+          previousItemIndex: _previousItemIndex,
+          isTransitioning: _isTransitioning,
+          child: PaneItemKeys(keys: _itemKeys, child: paneResult),
+        ),
       );
     });
   }
@@ -891,7 +894,7 @@ class NavigationAppBar with Diagnosticable {
         final onPressed = canPop ? () => Navigator.maybePop(context) : null;
         widget = NavigationPaneTheme(
           data: NavigationPaneTheme.of(context).merge(NavigationPaneThemeData(
-            unselectedIconColor: ButtonState.resolveWith((states) {
+            unselectedIconColor: WidgetStateProperty.resolveWith((states) {
               if (states.isDisabled) {
                 return ButtonThemeData.buttonColor(context, states);
               }
@@ -946,9 +949,8 @@ class _NavigationAppBar extends StatelessWidget {
     assert(debugCheckHasMediaQuery(context));
     assert(debugCheckHasFluentLocalizations(context));
 
-    final displayMode =
-        _InheritedNavigationView.maybeOf(context)?.displayMode ??
-            PaneDisplayMode.top;
+    final displayMode = InheritedNavigationView.maybeOf(context)?.displayMode ??
+        PaneDisplayMode.top;
     final leading = appBar._buildLeading(displayMode != PaneDisplayMode.top);
     final title = () {
       if (appBar.title != null) {
