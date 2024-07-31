@@ -208,6 +208,12 @@ class NavigationViewState extends State<NavigationView> {
     } else {
       setState(() => _minimalPaneOpen = false);
     }
+
+    PageStorage.of(context).writeState(
+      context,
+      _minimalPaneOpen,
+      identifier: 'minimalPaneOpen',
+    );
   }
 
   late bool _compactOverlayOpen;
@@ -266,6 +272,12 @@ class NavigationViewState extends State<NavigationView> {
     _compactOverlayOpen = PageStorage.of(context).readState(
           context,
           identifier: 'compactOverlayOpen',
+        ) as bool? ??
+        false;
+
+    _minimalPaneOpen = PageStorage.of(context).readState(
+          context,
+          identifier: 'minimalPaneOpen',
         ) as bool? ??
         false;
   }
