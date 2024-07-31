@@ -597,6 +597,7 @@ class PaneItemExpander extends PaneItem {
     super.selectedTileColor,
     super.onTap,
     this.initiallyExpanded = false,
+    this.closeMinimalPaneOnTap,
   }) : assert(
           items.any((item) => item is PaneItemExpander) == false,
           'There can not be nested PaneItemExpanders',
@@ -606,6 +607,9 @@ class PaneItemExpander extends PaneItem {
 
   /// Whether the item is initially expanded. Defaults to false
   final bool initiallyExpanded;
+
+  /// Whether the minimal pane should be closed when the item is tapped
+  final bool? closeMinimalPaneOnTap;
 
   static const kDefaultTrailing = Icon(FluentIcons.chevron_down, size: 8.0);
 

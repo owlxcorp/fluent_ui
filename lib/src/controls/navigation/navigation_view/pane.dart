@@ -1190,6 +1190,8 @@ class _CompactNavigationPane extends StatelessWidget {
   }
 }
 
+typedef NavigationPaneItemCallback = void Function(NavigationPaneItem);
+
 class _OpenNavigationPane extends StatefulWidget {
   _OpenNavigationPane({
     required this.pane,
@@ -1206,7 +1208,7 @@ class _OpenNavigationPane extends StatefulWidget {
   final Key? paneKey;
   final GlobalKey? listKey;
   final VoidCallback? onToggle;
-  final VoidCallback? onItemSelected;
+  final NavigationPaneItemCallback? onItemSelected;
   final NavigationPaneThemeData theme;
   final bool initiallyOpen;
   final VoidCallback? onAnimationEnd;
@@ -1214,7 +1216,7 @@ class _OpenNavigationPane extends StatefulWidget {
   static Widget buildItem(
     NavigationPane pane,
     NavigationPaneItem item, [
-    VoidCallback? onChanged,
+    NavigationPaneItemCallback? onChanged,
     double? width,
   ]) {
     return Builder(builder: (context) {
@@ -1232,11 +1234,11 @@ class _OpenNavigationPane extends StatefulWidget {
           selected,
           () {
             pane.changeTo(item);
-            onChanged?.call();
+            onChanged?.call(item);
           },
           onItemPressed: (item) {
             pane.changeTo(item);
-            onChanged?.call();
+            onChanged?.call(item);
           },
         );
       } else if (item is PaneItem) {
@@ -1246,7 +1248,7 @@ class _OpenNavigationPane extends StatefulWidget {
           selected,
           () {
             pane.changeTo(item);
-            onChanged?.call();
+            onChanged?.call(item);
           },
         );
       } else if (item is PaneItemWidgetAdapter) {

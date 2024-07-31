@@ -645,7 +645,7 @@ class NavigationViewState extends State<NavigationView> {
                               pane: pane,
                               paneKey: _panelKey,
                               listKey: _listKey,
-                              onItemSelected: toggleCompactOpenMode,
+                              onItemSelected: (item) => toggleCompactOpenMode(),
                               //onOpenSearch: widget.onOpenSearch,
                               onAnimationEnd: _animationEndCallback,
                             ),
@@ -756,7 +756,11 @@ class NavigationViewState extends State<NavigationView> {
                         pane: pane,
                         paneKey: _panelKey,
                         listKey: _listKey,
-                        onItemSelected: () => minimalPaneOpen = false,
+                        onItemSelected: (item) => item is! PaneItemExpander ||
+                                (item.closeMinimalPaneOnTap ??
+                                    item.onTap != null)
+                            ? minimalPaneOpen = false
+                            : null,
                       ),
                     ),
                   ),
