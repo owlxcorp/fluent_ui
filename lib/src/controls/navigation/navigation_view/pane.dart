@@ -81,6 +81,7 @@ class NavigationPane with Diagnosticable {
     this.onItemPressed,
     this.size,
     this.header,
+    this.infoBox,
     this.items = const [],
     this.footerItems = const [],
     this.autoSuggestBox,
@@ -136,6 +137,16 @@ class NavigationPane with Diagnosticable {
   /// ![Top Pane Header](https://docs.microsoft.com/en-us/windows/uwp/design/controls-and-patterns/images/navview-freeform-header-top.png)
   /// ![Left Pane Header](https://docs.microsoft.com/en-us/windows/uwp/design/controls-and-patterns/images/navview-freeform-header-left.png)
   final Widget? header;
+
+  /// An infoBox for the pane.
+  /// Usually used to display current session information, such as the current signed-in user.
+  ///
+  /// Hidden in compact mode.
+  ///
+  /// Usually an [Image] with a [Text] header and sub-header to the right of it.
+  ///
+  /// See Windows 11 Settings app for an example.
+  final Widget? infoBox;
 
   /// The items used by this panel. These items are displayed before
   /// [autoSuggestBox] and [footerItems].
@@ -334,6 +345,7 @@ class NavigationPane with Diagnosticable {
         other.menuButton == menuButton &&
         other.size == size &&
         other.header == header &&
+        other.infoBox == infoBox &&
         listEquals(other.items, items) &&
         listEquals(other.footerItems, footerItems) &&
         other.autoSuggestBox == autoSuggestBox &&
@@ -353,6 +365,7 @@ class NavigationPane with Diagnosticable {
         menuButton.hashCode ^
         size.hashCode ^
         header.hashCode ^
+        infoBox.hashCode ^
         items.hashCode ^
         footerItems.hashCode ^
         autoSuggestBox.hashCode ^
@@ -1150,6 +1163,22 @@ class _CompactNavigationPane extends StatelessWidget {
             }
             return const SizedBox.shrink();
           }(),
+          if (pane.infoBox != null)
+            DefaultTextStyle.merge(
+              maxLines: 1,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: 100,
+                  maxHeight: 100,
+                  maxWidth: 55,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0, vertical: 6.0),
+                  child: pane.infoBox!,
+                ),
+              ),
+            ),
           if (showReplacement)
             Padding(
               padding: topPadding,
@@ -1311,73 +1340,106 @@ class _OpenNavigationPaneState extends State<_OpenNavigationPane> {
       width: paneWidth,
       onEnd: widget.onAnimationEnd,
       color: theme.backgroundColor,
-      child: LayoutBuilder(builder: (context, constraints) {
-        final width = constraints.maxWidth;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          key: widget.pane.paneKey,
-          children: [
-            if (paneHeaderHeight == null || paneHeaderHeight >= 0)
-              Container(
-                margin: widget.pane.autoSuggestBox != null
-                    ? (menuButton == null ? theme.iconPadding : null)
-                    : topPadding,
-                height: paneHeaderHeight,
-                child: () {
-                  if (widget.pane.header != null) {
-                    return Row(children: [
-                      menuButton ?? const SizedBox.shrink(),
-                      Expanded(
-                        child: Align(
-                          alignment: AlignmentDirectional.centerStart,
-                          child: Padding(
-                            padding: const EdgeInsetsDirectional.only(
-                              start: 8.0,
-                            ),
-                            child: DefaultTextStyle.merge(
-                              style: theme.itemHeaderTextStyle,
-                              maxLines: 1,
-                              child: widget.pane.header!,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.maxWidth;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            key: widget.pane.paneKey,
+            children: [
+              if (paneHeaderHeight == null || paneHeaderHeight >= 0)
+                Container(
+                  margin: widget.pane.autoSuggestBox != null
+                      ? (menuButton == null ? theme.iconPadding : null)
+                      : topPadding,
+                  height: paneHeaderHeight,
+                  child: () {
+                    if (widget.pane.header != null) {
+                      return Row(children: [
+                        Flexible(child: menuButton ?? const SizedBox.shrink()),
+                        Expanded(
+                          child: Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: Padding(
+                              padding: const EdgeInsetsDirectional.only(
+                                start: 8.0,
+                              ),
+                              child: DefaultTextStyle.merge(
+                                style: theme.itemHeaderTextStyle,
+                                maxLines: 1,
+                                child: widget.pane.header!,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ]);
-                  } else {
-                    return menuButton ?? const SizedBox.shrink();
-                  }
-                }(),
-              ),
-            if (widget.pane.autoSuggestBox != null)
-              if (width > kOpenNavigationPaneWidth / 1.5)
-                Container(
-                  padding: theme.iconPadding ?? EdgeInsets.zero,
-                  height: 41.0,
-                  alignment: AlignmentDirectional.center,
-                  margin: topPadding,
-                  child: widget.pane.autoSuggestBox!,
-                )
-              else
-                Padding(
-                  padding: topPadding,
-                  child: PaneItem(
-                    title: Text(FluentLocalizations.of(context).clickToSearch),
-                    icon: widget.pane.autoSuggestBoxReplacement!,
-                    body: const SizedBox.shrink(),
-                  ).build(
-                    context,
-                    false,
-                    () {},
-                    displayMode: PaneDisplayMode.compact,
+                      ]);
+                    } else {
+                      return menuButton ?? const SizedBox.shrink();
+                    }
+                  }(),
+                ),
+              if (widget.pane.infoBox != null)
+                DefaultTextStyle.merge(
+                  maxLines: 1,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: 100,
+                      maxHeight: 100,
+                      maxWidth: 320,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 6.0),
+                      child: widget.pane.infoBox!,
+                    ),
                   ),
                 ),
-            Expanded(
-              child: ListView(
+              if (widget.pane.autoSuggestBox != null)
+                if (width > kOpenNavigationPaneWidth / 1.5)
+                  Container(
+                    padding: theme.iconPadding ?? EdgeInsets.zero,
+                    height: 41.0,
+                    alignment: AlignmentDirectional.center,
+                    margin: topPadding,
+                    child: widget.pane.autoSuggestBox!,
+                  )
+                else
+                  Padding(
+                    padding: topPadding,
+                    child: PaneItem(
+                      title:
+                          Text(FluentLocalizations.of(context).clickToSearch),
+                      icon: widget.pane.autoSuggestBoxReplacement!,
+                      body: const SizedBox.shrink(),
+                    ).build(
+                      context,
+                      false,
+                      () {},
+                      displayMode: PaneDisplayMode.compact,
+                    ),
+                  ),
+              Expanded(
+                child: ListView(
+                  shrinkWrap: true,
+                  key: widget.listKey,
+                  primary: true,
+                  addAutomaticKeepAlives: false,
+                  children: widget.pane.items.map((item) {
+                    return _OpenNavigationPane.buildItem(
+                      widget.pane,
+                      item,
+                      widget.onItemSelected,
+                      width,
+                    );
+                  }).toList(),
+                ),
+              ),
+              ListView(
+                primary: false,
                 shrinkWrap: true,
-                key: widget.listKey,
-                primary: true,
-                addAutomaticKeepAlives: false,
-                children: widget.pane.items.map((item) {
+                physics: const NeverScrollableScrollPhysics(),
+                children: widget.pane.footerItems.map((item) {
                   return _OpenNavigationPane.buildItem(
                     widget.pane,
                     item,
@@ -1386,23 +1448,10 @@ class _OpenNavigationPaneState extends State<_OpenNavigationPane> {
                   );
                 }).toList(),
               ),
-            ),
-            ListView(
-              primary: false,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              children: widget.pane.footerItems.map((item) {
-                return _OpenNavigationPane.buildItem(
-                  widget.pane,
-                  item,
-                  widget.onItemSelected,
-                  width,
-                );
-              }).toList(),
-            ),
-          ],
-        );
-      }),
+            ],
+          );
+        },
+      ),
     );
   }
 }

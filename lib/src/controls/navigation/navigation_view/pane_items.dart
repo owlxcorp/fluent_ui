@@ -231,7 +231,7 @@ class PaneItem extends NavigationPaneItem {
             case PaneDisplayMode.minimal:
             case PaneDisplayMode.open:
               final shouldShowTrailing = !isTransitioning;
-
+              if (!shouldShowTrailing) return SizedBox.shrink();
               return ConstrainedBox(
                 key: itemKey,
                 constraints: const BoxConstraints(

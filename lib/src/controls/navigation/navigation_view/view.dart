@@ -641,26 +641,28 @@ class NavigationViewState extends State<NavigationView> {
                   PaneScrollConfiguration(
                     child: () {
                       if (_compactOverlayOpen) {
-                        return ClipRect(
-                          child: Container(
-                            key: _overlayKey,
-                            padding: appBarPadding,
-                            decoration: BoxDecoration(
-                              color: const Color(0xfff3f3f3),
-                              border: Border.all(
-                                color: const Color(0xFF6c6c6c),
-                                width: 0.15,
-                              ),
+                        return Container(
+                          key: _overlayKey,
+                          padding: appBarPadding,
+                          decoration: BoxDecoration(
+                            color: const Color(0xfff3f3f3),
+                            border: Border.all(
+                              color: const Color(0xFF6c6c6c),
+                              width: 0.15,
                             ),
-                            child: _OpenNavigationPane(
-                              theme: theme,
-                              pane: pane,
-                              paneKey: _panelKey,
-                              listKey: _listKey,
-                              onItemSelected: (item) => toggleCompactOpenMode(),
-                              //onOpenSearch: widget.onOpenSearch,
-                              onAnimationEnd: _animationEndCallback,
-                            ),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          margin: const EdgeInsets.symmetric(
+                            vertical: 1.0,
+                          ),
+                          child: _OpenNavigationPane(
+                            theme: theme,
+                            pane: pane,
+                            paneKey: _panelKey,
+                            listKey: _listKey,
+                            onToggle: toggleCompactOpenMode,
+                            onItemSelected: (item) => toggleCompactOpenMode(),
+                            onAnimationEnd: _animationEndCallback,
                           ),
                         );
                       } else {
@@ -674,6 +676,7 @@ class NavigationViewState extends State<NavigationView> {
                             listKey: _listKey,
                             onToggle: toggleCompactOpenMode,
                             onOpenSearch: widget.onOpenSearch,
+                            onAnimationEnd: _animationEndCallback,
                           ),
                         );
                       }
