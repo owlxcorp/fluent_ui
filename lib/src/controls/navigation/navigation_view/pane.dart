@@ -1357,21 +1357,23 @@ class _OpenNavigationPaneState extends State<_OpenNavigationPane> {
                   child: () {
                     if (widget.pane.header != null) {
                       return Row(children: [
-                        Flexible(child: menuButton ?? const SizedBox.shrink()),
+                        menuButton ?? const SizedBox.shrink(),
                         Expanded(
-                          child: Align(
-                            alignment: AlignmentDirectional.centerStart,
-                            child: Padding(
-                              padding: const EdgeInsetsDirectional.only(
-                                start: 8.0,
-                              ),
-                              child: DefaultTextStyle.merge(
-                                style: theme.itemHeaderTextStyle,
-                                maxLines: 1,
-                                child: widget.pane.header!,
-                              ),
-                            ),
-                          ),
+                          child: widget.pane.header!,
+
+                          // Align(
+                          //   // alignment: AlignmentDirectional.centerStart,
+                          //   child: Padding(
+                          //     padding: const EdgeInsetsDirectional.only(
+                          //       start: 8.0,
+                          //     ),
+                          //     child: DefaultTextStyle.merge(
+                          //       style: theme.itemHeaderTextStyle,
+                          //       maxLines: 1,
+                          //       child: widget.pane.header!,
+                          //     ),
+                          //   ),
+                          // ),
                         ),
                       ]);
                     } else {
