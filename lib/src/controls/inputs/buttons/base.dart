@@ -25,7 +25,17 @@ abstract class BaseButton extends StatefulWidget {
     required this.autofocus,
     required this.child,
     required this.focusable,
+    this.cursor,
   });
+
+  /// {@template fluent_ui.controls.inputs.BaseButton.cursor}
+  /// The cursor for a mouse pointer when it enters or is hovering over the
+  /// widget.
+  ///
+  /// The [cursor] defaults to [MouseCursor.defer], deferring the choice of
+  /// cursor to the next region behind it in hit-test order.
+  /// {@endtemplate}
+  final MouseCursor? cursor;
 
   /// Called when the button is tapped or otherwise activated.
   ///
@@ -151,6 +161,7 @@ class _BaseButtonState extends State<BaseButton> {
       focusEnabled: widget.focusable,
       onTapDown: widget.onTapDown,
       onTapUp: widget.onTapUp,
+      cursor: widget.cursor,
       builder: (context, states) {
         T? resolve<T>(
             WidgetStateProperty<T>? Function(ButtonStyle? style) getProperty) {
