@@ -657,7 +657,7 @@ class FlyoutController with ChangeNotifier {
                 Positioned.fill(
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
-                    onTap: barrierDismissible ? navigator.pop : null,
+                    onTap: barrierDismissible ? () => navigator.pop() : null,
                     child: barrier,
                   ),
                 ),
@@ -756,7 +756,7 @@ class FlyoutController with ChangeNotifier {
 
             if (dismissWithEsc) {
               box = Actions(
-                actions: {DismissIntent: _DismissAction(navigator.pop)},
+                actions: {DismissIntent: _DismissAction(() => navigator.pop())},
                 child: FocusScope(
                   autofocus: true,
                   child: box,
