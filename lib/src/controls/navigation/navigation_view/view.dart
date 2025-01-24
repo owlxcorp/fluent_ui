@@ -869,6 +869,8 @@ class NavigationAppBar with Diagnosticable {
   /// The background color of this app bar.
   final Color? backgroundColor;
 
+  final double? titleStartPadding;
+
   /// Creates a fluent-styled app bar.
   const NavigationAppBar({
     this.key,
@@ -878,6 +880,7 @@ class NavigationAppBar with Diagnosticable {
     this.automaticallyImplyLeading = true,
     this.height = _kDefaultAppBarHeight,
     this.backgroundColor,
+    this.titleStartPadding = 6.0,
   });
 
   @override
@@ -982,9 +985,11 @@ class _NavigationAppBar extends StatelessWidget {
         return AnimatedPadding(
           duration: theme.animationDuration ?? Duration.zero,
           curve: theme.animationCurve ?? Curves.linear,
-          padding: (theme.iconPadding ?? EdgeInsets.zero).add(
-            const EdgeInsetsDirectional.only(start: 6.0),
-          ),
+          padding: appBar.titleStartPadding != null
+              ? EdgeInsetsDirectional.only(start: appBar.titleStartPadding!)
+              : (theme.iconPadding ?? EdgeInsets.zero).add(
+                  const EdgeInsetsDirectional.only(start: 6.0),
+                ),
           child: DefaultTextStyle.merge(
             style: FluentTheme.of(context).typography.caption,
             maxLines: 1,
