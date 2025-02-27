@@ -226,6 +226,12 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
       title: const Text('DatePicker'),
       body: const SizedBox.shrink(),
     ),
+    PaneItem(
+      key: const ValueKey('/forms/color_picker'),
+      icon: const Icon(FluentIcons.color),
+      title: const Text('ColorPicker'),
+      body: const SizedBox.shrink(),
+    ),
     PaneItemHeader(header: const Text('Navigation')),
     PaneItem(
       key: const ValueKey('/navigation/navigation_view'),
@@ -296,15 +302,27 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
       body: const SizedBox.shrink(),
     ),
     PaneItem(
-      key: const ValueKey('/popups/tooltip'),
-      icon: const Icon(FluentIcons.hint_text),
-      title: const Text('Tooltip'),
-      body: const SizedBox.shrink(),
-    ),
-    PaneItem(
       key: const ValueKey('/popups/flyout'),
       icon: const Icon(FluentIcons.pop_expand),
       title: const Text('Flyout'),
+      body: const SizedBox.shrink(),
+    ),
+    PaneItem(
+      key: const ValueKey('/popups/menu_bar'),
+      icon: const Icon(FluentIcons.expand_menu),
+      title: const Text('MenuBar'),
+      body: const SizedBox.shrink(),
+    ),
+    PaneItem(
+      key: const ValueKey('/popups/teaching_tip'),
+      icon: const Icon(FluentIcons.field_filled),
+      title: const Text('Teaching Tip'),
+      body: const SizedBox.shrink(),
+    ),
+    PaneItem(
+      key: const ValueKey('/popups/tooltip'),
+      icon: const Icon(FluentIcons.hint_text),
+      title: const Text('Tooltip'),
       body: const SizedBox.shrink(),
     ),
     PaneItemHeader(header: const Text('Theming')),
@@ -551,7 +569,6 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
             case NavigationIndicators.end:
               return const EndNavigationIndicator();
             case NavigationIndicators.sticky:
-            default:
               return const StickyNavigationIndicator();
           }
         }(),
@@ -818,6 +835,15 @@ final router = GoRouter(navigatorKey: rootNavigatorKey, routes: [
         ),
       ),
 
+      /// ColorPicker
+      GoRoute(
+        path: '/forms/color_picker',
+        builder: (context, state) => DeferredWidget(
+          forms.loadLibrary,
+          () => forms.ColorPickerPage(),
+        ),
+      ),
+
       /// /// Navigation
       /// NavigationView
       GoRoute(
@@ -927,6 +953,15 @@ final router = GoRouter(navigatorKey: rootNavigatorKey, routes: [
         ),
       ),
 
+      /// MenuBar
+      GoRoute(
+        path: '/popups/menu_bar',
+        builder: (context, state) => DeferredWidget(
+          surfaces.loadLibrary,
+          () => popups.MenuBarPage(),
+        ),
+      ),
+
       /// Tooltip
       GoRoute(
         path: '/popups/tooltip',
@@ -942,6 +977,15 @@ final router = GoRouter(navigatorKey: rootNavigatorKey, routes: [
         builder: (context, state) => DeferredWidget(
           surfaces.loadLibrary,
           () => popups.Flyout2Screen(),
+        ),
+      ),
+
+      /// Teaching Tip
+      GoRoute(
+        path: '/popups/teaching_tip',
+        builder: (context, state) => DeferredWidget(
+          surfaces.loadLibrary,
+          () => popups.TeachingTipPage(),
         ),
       ),
 

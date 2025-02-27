@@ -107,7 +107,7 @@ class NumberBox<T extends num> extends StatefulWidget {
   /// Default is 2.
   final int? precision;
 
-  /// The parttern for the number box. The pattern is used to format the number
+  /// The pattern for the number box. The pattern is used to format the number
   /// when the user inputs a value.
   ///
   /// If set, [precision], [formatter] and [format] must be `null`.
@@ -185,6 +185,17 @@ class NumberBox<T extends num> extends StatefulWidget {
 
   /// {@macro flutter.widgets.editableText.showCursor}
   final bool? showCursor;
+
+  /// Controls the [BoxDecoration] of the box behind the text input.
+  ///
+  /// Defaults to having a rounded rectangle grey border and can be null to have
+  /// no box decoration.
+  final WidgetStateProperty<BoxDecoration>? decoration;
+
+  /// Controls the [BoxDecoration] of the box in front of the text input.
+  ///
+  /// If [highlightColor] is provided, this must not be provided
+  final WidgetStateProperty<BoxDecoration>? foregroundDecoration;
 
   /// The highlight color of the text box.
   ///
@@ -283,13 +294,15 @@ class NumberBox<T extends num> extends StatefulWidget {
     this.inputFormatters,
     this.placeholder,
     this.placeholderStyle,
-    this.cursorWidth = 1.5,
+    this.cursorWidth = 2.0,
     this.cursorRadius = const Radius.circular(2.0),
     this.cursorHeight,
     this.cursorColor,
     this.showCursor,
     this.highlightColor,
     this.unfocusedColor,
+    this.decoration,
+    this.foregroundDecoration,
     this.style,
     this.textAlign,
     this.keyboardType = TextInputType.number,
@@ -391,7 +404,8 @@ class NumberBoxState<T extends num> extends State<NumberBox<T>> {
         return _formatter.format(value);
       };
     }
-    controller.text = widget.value?.toString() ?? '';
+
+    if (widget.value != null) _updateController(widget.value!);
   }
 
   @override
@@ -497,14 +511,23 @@ class NumberBoxState<T extends num> extends State<NumberBox<T>> {
     _entry = null;
   }
 
+  final _clearButtonKey = GlobalKey();
+  final _incrementButtonKey = GlobalKey();
+  final _decrementButtonKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     assert(debugCheckHasFluentTheme(context));
     assert(debugCheckHasOverlay(context));
 
     final textFieldSuffix = <Widget>[
+      // Ensure all modes have a suffix. This is necessary to ensure the text
+      // is aligned correctly when there are no suffix actions.
+      // See https://github.com/bdlukaa/fluent_ui/issues/1150
+      const SizedBox(),
       if (widget.clearButton && _hasPrimaryFocus)
         IconButton(
+          key: _clearButtonKey,
           icon: const Icon(FluentIcons.clear),
           onPressed: _clearValue,
         ),
@@ -514,13 +537,16 @@ class NumberBoxState<T extends num> extends State<NumberBox<T>> {
       case SpinButtonPlacementMode.inline:
         textFieldSuffix.addAll([
           IconButton(
+            key: _incrementButtonKey,
             icon: const Icon(FluentIcons.chevron_up),
             onPressed: widget.onChanged != null ? incrementSmall : null,
           ),
           IconButton(
+            key: _decrementButtonKey,
             icon: const Icon(FluentIcons.chevron_down),
             onPressed: widget.onChanged != null ? decrementSmall : null,
           ),
+          const SizedBox(),
         ]);
         break;
       case SpinButtonPlacementMode.compact:
@@ -542,14 +568,21 @@ class NumberBoxState<T extends num> extends State<NumberBox<T>> {
       cursorRadius: widget.cursorRadius,
       cursorWidth: widget.cursorWidth,
       highlightColor: widget.highlightColor,
+      unfocusedColor: widget.unfocusedColor,
+      decoration: widget.decoration,
+      foregroundDecoration: widget.foregroundDecoration,
       prefix: widget.leadingIcon,
       focusNode: focusNode,
       controller: controller,
       keyboardType: widget.keyboardType,
       enabled: widget.onChanged != null,
-      suffix:
-          textFieldSuffix.isNotEmpty ? Row(children: textFieldSuffix) : null,
-      unfocusedColor: widget.unfocusedColor,
+      suffix: textFieldSuffix.isNotEmpty
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: textFieldSuffix,
+            )
+          : null,
       style: widget.style,
       textAlign: widget.textAlign ?? TextAlign.start,
       keyboardAppearance: widget.keyboardAppearance,
@@ -564,7 +597,10 @@ class NumberBoxState<T extends num> extends State<NumberBox<T>> {
       textDirection: widget.textDirection,
       onSubmitted: (_) => updateValue(),
       onTap: updateValue,
-      onTapOutside: (_) => updateValue(),
+      onTapOutside: (_) {
+        updateValue();
+        focusNode.unfocus();
+      },
       onEditingComplete: widget.onEditingComplete != null
           ? () {
               updateValue();
