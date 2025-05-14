@@ -1,3 +1,42 @@
+## 4.11.4
+
+- feat: Added Tagalog localization support ([#1207](https://github.com/bdlukaa/fluent_ui/pull/1207))
+- feat: Added `ListTile.decorationMargin` parameter
+- fix: Custom `ContextMenuButtonItem` are correctly displayed on text selection control ([#1212](https://github.com/bdlukaa/fluent_ui/pull/1212))
+- fix: `TreeView`'s focus always starts at first or last item ([#834](https://github.com/bdlukaa/fluent_ui/issues/834), [#1195](https://github.com/bdlukaa/fluent_ui/pull/1195))
+- fix: `InfoBar` no longer throw error when automatically closing ([#955](https://github.com/bdlukaa/fluent_ui/issues/955), [#1215](https://github.com/bdlukaa/fluent_ui/pull/1215))
+- fix: Properly disable date and time pickers when `onChanged` is null ([#1210](https://github.com/bdlukaa/fluent_ui/issues/1210))
+- fix: `MenuFlyoutSubItem` no longer errors while building when `FlyoutPlacementMode.auto` is used ([#1206](https://github.com/bdlukaa/fluent_ui/issues/1206), [#1191](https://github.com/bdlukaa/fluent_ui/pull/1191))
+- fix: The checkbox inside `ListTile.selectable` should not have its own focus ([#1144](https://github.com/bdlukaa/fluent_ui/issues/1144))
+- feat: `BaseButton.onTapUp` reflects the `GestureDetector.onTapUp` ([#1201](https://github.com/bdlukaa/fluent_ui/issues/1201))
+- feat: Add `BreadcrumbBar.chevronAlignment` ([#1213](https://github.com/bdlukaa/fluent_ui/issues/1213))
+- **MINOR BREAKING** feat: `Tab.backgroundColor`, `Tab.selectedBackgroundColor`, `Tab.foregroundColor`, `Tab.selectedForegroundColor` and `Tab.outlineColor` are now instance of `WidgetStateProperty<Color>`. ([#1214](https://github.com/bdlukaa/fluent_ui/issues/1214))
+  Before:
+  ```dart
+  Tab(
+    backgroundColor: FluentTheme.of(context).inactiveColor,
+    selectedBackgroundColor: Colors.blue,
+    foregroundColor: Colors.white,
+    selectedForegroundColor: Colors.black,
+    outlineColor: Colors.grey,
+  ),
+  ```
+
+  After:
+  ```dart
+  Tab(
+    backgroundColor: WidgetStateProperty.resolveWith((_) {
+      return FluentTheme.of(context).inactiveColor;
+    }),
+    selectedBackgroundColor: WidgetStateProperty.all(Colors.blue),
+    foregroundColor: WidgetStateProperty.all(Colors.white),
+    selectedForegroundColor: WidgetStateProperty.all(Colors.black),
+    outlineColor: WidgetStateProperty.all(Colors.grey),
+  ),
+  ```
+
+  This allows the `Tab` to be customized based on its state, such as `hovered`, `pressed`, `focused`, and `disabled`, and to be affected by theme changes.
+
 ## 4.11.3
 
 - fix: `TabView.newTabIcon` is now typed as a `Widget` ([#1187](https://github.com/bdlukaa/fluent_ui/issues/1187))
