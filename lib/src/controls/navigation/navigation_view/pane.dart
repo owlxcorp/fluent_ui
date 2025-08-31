@@ -1155,54 +1155,6 @@ class _CompactNavigationPane extends StatelessWidget {
       child: Align(
         key: pane.paneKey,
         alignment: AlignmentDirectional.topCenter,
-<<<<<<< HEAD
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          () {
-            if (pane.menuButton != null) return pane.menuButton!;
-            if (onToggle != null) {
-              return NavigationPane.buildMenuButton(
-                context,
-                Text(FluentLocalizations.of(context).openNavigationTooltip),
-                pane,
-                onPressed: () {
-                  onToggle?.call();
-                },
-                padding: showReplacement ? EdgeInsets.zero : topPadding,
-              );
-            }
-            return const SizedBox.shrink();
-          }(),
-          if (pane.infoBox != null)
-            DefaultTextStyle.merge(
-              maxLines: 1,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: 100,
-                  maxHeight: 100,
-                  maxWidth: 55,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 6.0),
-                  child: pane.infoBox!,
-                ),
-              ),
-            ),
-          if (showReplacement)
-            Padding(
-              padding: topPadding,
-              child: PaneItem(
-                title: Text(FluentLocalizations.of(context).clickToSearch),
-                icon: pane.autoSuggestBoxReplacement!,
-                body: const SizedBox.shrink(),
-              ).build(
-                context,
-                false,
-                () {
-                  onToggle?.call();
-                  onOpenSearch?.call();
-                },
-=======
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1221,20 +1173,41 @@ class _CompactNavigationPane extends StatelessWidget {
               }
               return const SizedBox.shrink();
             }(),
+            if (pane.infoBox != null)
+              DefaultTextStyle.merge(
+                maxLines: 1,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minHeight: 100,
+                    maxHeight: 100,
+                    maxWidth: 55,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                      vertical: 6.0,
+                    ),
+                    child: pane.infoBox!,
+                  ),
+                ),
+              ),
             if (showReplacement)
               Padding(
                 padding: topPadding,
-                child:
-                    PaneItem(
-                      title: Text(
-                        FluentLocalizations.of(context).clickToSearch,
-                      ),
-                      icon: pane.autoSuggestBoxReplacement!,
-                      body: const SizedBox.shrink(),
-                    ).build(context, false, () {
-                      onToggle?.call();
-                      onOpenSearch?.call();
-                    }),
+                child: PaneItem(
+                  title: Text(
+                    FluentLocalizations.of(context).clickToSearch,
+                  ),
+                  icon: pane.autoSuggestBoxReplacement!,
+                  body: const SizedBox.shrink(),
+                ).build(
+                  context,
+                  false,
+                  () {
+                    onToggle?.call();
+                    onOpenSearch?.call();
+                  },
+                ),
               ),
             Expanded(
               child: ListView(
@@ -1244,7 +1217,6 @@ class _CompactNavigationPane extends StatelessWidget {
                 children: pane.items.map((item) {
                   return _buildItem(item);
                 }).toList(),
->>>>>>> upstream/master
               ),
             ),
             ListView(
@@ -1318,33 +1290,6 @@ class _OpenNavigationPane extends StatefulWidget {
           final selected = pane.isSelected(item);
           return item.build(context, selected, () {
             pane.changeTo(item);
-<<<<<<< HEAD
-            onChanged?.call(item);
-          },
-          onItemPressed: (item) {
-            pane.changeTo(item);
-            onChanged?.call(item);
-          },
-        );
-      } else if (item is PaneItem) {
-        final selected = pane.isSelected(item);
-        return item.build(
-          context,
-          selected,
-          () {
-            pane.changeTo(item);
-            onChanged?.call(item);
-          },
-        );
-      } else if (item is PaneItemWidgetAdapter) {
-        return item.build(context);
-      } else {
-        throw UnsupportedError(
-          '${item.runtimeType} is not a supported pane item type.',
-        );
-      }
-    });
-=======
             onChanged?.call();
           });
         } else if (item is PaneItemWidgetAdapter) {
@@ -1356,7 +1301,6 @@ class _OpenNavigationPane extends StatefulWidget {
         }
       },
     );
->>>>>>> upstream/master
   }
 
   @override
@@ -1407,17 +1351,10 @@ class _OpenNavigationPaneState extends State<_OpenNavigationPane> {
       key: widget.paneKey,
       width: paneWidth,
       onEnd: widget.onAnimationEnd,
-<<<<<<< HEAD
       color: theme.backgroundColor,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;
-
-=======
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final width = constraints.maxWidth;
->>>>>>> upstream/master
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             key: widget.pane.paneKey,
@@ -1430,28 +1367,6 @@ class _OpenNavigationPaneState extends State<_OpenNavigationPane> {
                   height: paneHeaderHeight,
                   child: () {
                     if (widget.pane.header != null) {
-<<<<<<< HEAD
-                      return Row(children: [
-                        menuButton ?? const SizedBox.shrink(),
-                        Expanded(
-                          child: widget.pane.header!,
-
-                          // Align(
-                          //   // alignment: AlignmentDirectional.centerStart,
-                          //   child: Padding(
-                          //     padding: const EdgeInsetsDirectional.only(
-                          //       start: 8.0,
-                          //     ),
-                          //     child: DefaultTextStyle.merge(
-                          //       style: theme.itemHeaderTextStyle,
-                          //       maxLines: 1,
-                          //       child: widget.pane.header!,
-                          //     ),
-                          //   ),
-                          // ),
-                        ),
-                      ]);
-=======
                       return Row(
                         children: [
                           menuButton ?? const SizedBox.shrink(),
@@ -1472,30 +1387,28 @@ class _OpenNavigationPaneState extends State<_OpenNavigationPane> {
                           ),
                         ],
                       );
->>>>>>> upstream/master
                     } else {
                       return menuButton ?? const SizedBox.shrink();
                     }
                   }(),
-<<<<<<< HEAD
                 ),
               if (widget.pane.infoBox != null)
                 DefaultTextStyle.merge(
                   maxLines: 1,
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(
+                    constraints: const BoxConstraints(
                       minHeight: 100,
                       maxHeight: 100,
                       maxWidth: 320,
                     ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0, vertical: 6.0),
+                        horizontal: 8.0,
+                        vertical: 6.0,
+                      ),
                       child: widget.pane.infoBox!,
                     ),
                   ),
-=======
->>>>>>> upstream/master
                 ),
               if (widget.pane.autoSuggestBox != null)
                 if (width > kOpenNavigationPaneWidth / 1.5)
@@ -1509,10 +1422,10 @@ class _OpenNavigationPaneState extends State<_OpenNavigationPane> {
                 else
                   Padding(
                     padding: topPadding,
-<<<<<<< HEAD
                     child: PaneItem(
-                      title:
-                          Text(FluentLocalizations.of(context).clickToSearch),
+                      title: Text(
+                        FluentLocalizations.of(context).clickToSearch,
+                      ),
                       icon: widget.pane.autoSuggestBoxReplacement!,
                       body: const SizedBox.shrink(),
                     ).build(
@@ -1521,21 +1434,6 @@ class _OpenNavigationPaneState extends State<_OpenNavigationPane> {
                       () {},
                       displayMode: PaneDisplayMode.compact,
                     ),
-=======
-                    child:
-                        PaneItem(
-                          title: Text(
-                            FluentLocalizations.of(context).clickToSearch,
-                          ),
-                          icon: widget.pane.autoSuggestBoxReplacement!,
-                          body: const SizedBox.shrink(),
-                        ).build(
-                          context,
-                          false,
-                          () {},
-                          displayMode: PaneDisplayMode.compact,
-                        ),
->>>>>>> upstream/master
                   ),
               Expanded(
                 child: ListView(
