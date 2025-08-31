@@ -100,7 +100,8 @@ TreeView(
             onItemInvoked: (item, reason) async =>
                 debugPrint('onItemInvoked(reason=$reason): $item'),
             onSelectionChanged: (selectedItems) async => debugPrint(
-                'onSelectionChanged: ${selectedItems.map((i) => i.value)}'),
+              'onSelectionChanged: ${selectedItems.map((i) => i.value)}',
+            ),
             onSecondaryTap: (item, details) async {
               debugPrint('onSecondaryTap $item at ${details.globalPosition}');
             },
@@ -161,6 +162,7 @@ TreeView(
     debugPrint('onSecondaryTap $item at ${details.globalPosition}');
   },
 )''',
+<<<<<<< HEAD
           child: Column(
             children: [
               TreeView(
@@ -176,6 +178,18 @@ TreeView(
                 },
               ),
             ],
+=======
+          child: TreeView(
+            items: lazyItems,
+            onItemInvoked: (item, reason) async =>
+                debugPrint('onItemInvoked(reason=$reason): $item'),
+            onSelectionChanged: (selectedItems) async => debugPrint(
+              'onSelectionChanged: ${selectedItems.map((i) => i.value)}',
+            ),
+            onSecondaryTap: (item, details) async {
+              debugPrint('onSecondaryTap $item at ${details.globalPosition}');
+            },
+>>>>>>> upstream/master
           ),
         ),
         subtitle(content: const Text('A TreeView with custom gestures')),
@@ -207,7 +221,8 @@ TreeView(
             onItemInvoked: (item, reason) async =>
                 debugPrint('onItemInvoked(reason=$reason): $item'),
             onSelectionChanged: (selectedItems) async => debugPrint(
-                'onSelectionChanged: ${selectedItems.map((i) => i.value)}'),
+              'onSelectionChanged: ${selectedItems.map((i) => i.value)}',
+            ),
             onSecondaryTap: (item, details) async {
               debugPrint('onSecondaryTap $item at ${details.globalPosition}');
             },
@@ -215,13 +230,13 @@ TreeView(
               return <Type, GestureRecognizerFactory>{
                 DoubleTapGestureRecognizer:
                     GestureRecognizerFactoryWithHandlers<
-                        DoubleTapGestureRecognizer>(
-                  () => DoubleTapGestureRecognizer(),
-                  (DoubleTapGestureRecognizer instance) {
-                    instance.onDoubleTap =
-                        () => debugPrint('onDoubleTap $item');
-                  },
-                ),
+                      DoubleTapGestureRecognizer
+                    >(() => DoubleTapGestureRecognizer(), (
+                      DoubleTapGestureRecognizer instance,
+                    ) {
+                      instance.onDoubleTap = () =>
+                          debugPrint('onDoubleTap $item');
+                    }),
               };
             },
           ),
@@ -268,9 +283,10 @@ TreeView(
               children: [
                 TreeViewItem(content: const Text('2018'), value: "tax_2018"),
                 TreeViewItem(
-                    content: const Text('2019'),
-                    value: "tax_2019",
-                    selected: true),
+                  content: const Text('2019'),
+                  value: "tax_2019",
+                  selected: true,
+                ),
                 TreeViewItem(content: const Text('2020'), value: "tax_2020"),
               ],
             ),
@@ -300,18 +316,9 @@ TreeView(
 
         // ...and add the fetched nodes.
         item.children.addAll([
-          TreeViewItem(
-            content: const Text('Lazy item 1'),
-            value: 'lazy_1',
-          ),
-          TreeViewItem(
-            content: const Text('Lazy item 2'),
-            value: 'lazy_2',
-          ),
-          TreeViewItem(
-            content: const Text('Lazy item 3'),
-            value: 'lazy_3',
-          ),
+          TreeViewItem(content: const Text('Lazy item 1'), value: 'lazy_1'),
+          TreeViewItem(content: const Text('Lazy item 2'), value: 'lazy_2'),
+          TreeViewItem(content: const Text('Lazy item 3'), value: 'lazy_3'),
           TreeViewItem(
             content: const Text(
               'Lazy item 4 (this text should not overflow)',
