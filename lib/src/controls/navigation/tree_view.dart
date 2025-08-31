@@ -986,6 +986,7 @@ class _TreeViewItem extends StatelessWidget {
       child: HoverButton(
         hitTestBehavior: HitTestBehavior.translucent,
         gestures: gestures,
+<<<<<<< HEAD
         shortcuts:
             item.isExpandable
                 ? {
@@ -1012,6 +1013,67 @@ class _TreeViewItem extends StatelessWidget {
                       onExpandToggle();
                     }
                   }),
+=======
+        shortcuts: item.isExpandable
+            ? {
+                const SingleActivator(
+                  LogicalKeyboardKey.arrowLeft,
+                ): VoidCallbackIntent(() {
+                  if (item.expanded) {
+                    // if the item is expanded, close it
+                    onExpandToggle();
+                  } else if (item.parent != null) {
+                    // if the item is already closed and has a parent
+                    // focus the parent
+                    item.parent!.focusNode.requestFocus();
+                  }
+                }),
+                const SingleActivator(
+                  LogicalKeyboardKey.arrowRight,
+                ): VoidCallbackIntent(() {
+                  if (item.expanded) {
+                    // if the item is already expanded, focus its first child
+                    FocusScope.of(context).nextFocus();
+                  } else {
+                    // expand the item
+                    onExpandToggle();
+                  }
+                }),
+              }
+            : {
+                const SingleActivator(
+                  LogicalKeyboardKey.arrowLeft,
+                ): VoidCallbackIntent(() {
+                  if (item.parent != null) {
+                    // if the item has a parent, focus the parent
+                    item.parent!.focusNode.requestFocus();
+                  }
+                }),
+              },
+        onPressed: selectionMode == TreeViewSelectionMode.single
+            ? () {
+                item._focusedByPress = true;
+                item.focusNode.requestFocus();
+                FocusTraversalGroup.of(
+                  context,
+                ).invalidateScopeData(item.focusNode.nearestScope!);
+                onSelect();
+                onInvoked(TreeViewItemInvokeReason.pressed);
+              }
+            : () {
+                item._focusedByPress = true;
+                item.focusNode.requestFocus();
+                FocusTraversalGroup.of(
+                  context,
+                ).invalidateScopeData(item.focusNode.nearestScope!);
+                onInvoked(TreeViewItemInvokeReason.pressed);
+              },
+        onFocusTap: _onCheckboxInvoked,
+        onFocusChange: selectionMode == TreeViewSelectionMode.single
+            ? (focused) {
+                if (focused && !item._focusedByPress) {
+                  onSelect();
+>>>>>>> upstream/master
                 }
                 : {
                   const SingleActivator(
@@ -1073,6 +1135,7 @@ class _TreeViewItem extends StatelessWidget {
                 // Indentation and selection indicator for single selection mode.
                 Container(
                   constraints: BoxConstraints(
+<<<<<<< HEAD
                     minHeight:
                         selectionMode == TreeViewSelectionMode.multiple
                             ? 28.0
@@ -1089,6 +1152,22 @@ class _TreeViewItem extends StatelessWidget {
                             : !narrowSpacing
                             ? item.depth * _whiteSpace * 2
                             : item.depth * _whiteSpace,
+=======
+                    minHeight: selectionMode == TreeViewSelectionMode.multiple
+                        ? 28.0
+                        : 26.0,
+                  ),
+                  padding: EdgeInsetsDirectional.only(
+                    start: selectionMode == TreeViewSelectionMode.multiple
+                        ? !narrowSpacing
+                              ? item.depth * _whiteSpace * 3
+                              // The extra 4 pixels are added as the checkbox's
+                              // width is not a multiple of 8.
+                              : item.depth * (_whiteSpace * 2 + 4)
+                        : !narrowSpacing
+                        ? item.depth * _whiteSpace * 2
+                        : item.depth * _whiteSpace,
+>>>>>>> upstream/master
                   ),
                   decoration: BoxDecoration(
                     color:

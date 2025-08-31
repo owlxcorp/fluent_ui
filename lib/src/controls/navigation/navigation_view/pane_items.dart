@@ -237,7 +237,35 @@ class PaneItem extends NavigationPaneItem {
                 constraints: const BoxConstraints(
                   minHeight: kPaneItemMinHeight,
                 ),
-                child: Row(children: [
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: theme.iconPadding ?? EdgeInsets.zero,
+                      child: IconTheme.merge(
+                        data: iconThemeData,
+                        child: Center(child: icon),
+                      ),
+                    ),
+                    Expanded(child: textResult),
+                    if (shouldShowTrailing) ...[
+                      if (infoBadge != null)
+                        Padding(
+                          padding: const EdgeInsetsDirectional.only(end: 8.0),
+                          child: infoBadge!,
+                        ),
+                      if (trailing != null)
+                        IconTheme.merge(
+                          data: const IconThemeData(size: 16.0),
+                          child: trailing!,
+                        ),
+                    ],
+                  ],
+                ),
+              );
+            case PaneDisplayMode.top:
+              Widget result = Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   Padding(
                     padding: theme.iconPadding ?? EdgeInsets.zero,
                     child: IconTheme.merge(
@@ -245,47 +273,24 @@ class PaneItem extends NavigationPaneItem {
                       child: Center(child: icon),
                     ),
                   ),
-                  Expanded(child: textResult),
-                  if (shouldShowTrailing) ...[
-                    if (infoBadge != null)
-                      Padding(
-                        padding: const EdgeInsetsDirectional.only(end: 8.0),
-                        child: infoBadge!,
-                      ),
-                    if (trailing != null)
-                      IconTheme.merge(
-                        data: const IconThemeData(size: 16.0),
-                        child: trailing!,
-                      ),
-                  ],
-                ]),
-              );
-            case PaneDisplayMode.top:
-              Widget result = Row(mainAxisSize: MainAxisSize.min, children: [
-                Padding(
-                  padding: theme.iconPadding ?? EdgeInsets.zero,
-                  child: IconTheme.merge(
-                    data: iconThemeData,
-                    child: Center(child: icon),
-                  ),
-                ),
-                if (showTextOnTop) textResult,
-                if (trailing != null)
-                  IconTheme.merge(
-                    data: const IconThemeData(size: 16.0),
-                    child: trailing!,
-                  ),
-              ]);
-              if (infoBadge != null) {
-                return Stack(key: itemKey, clipBehavior: Clip.none, children: [
-                  result,
-                  if (infoBadge != null)
-                    PositionedDirectional(
-                      end: -3,
-                      top: 3,
-                      child: infoBadge!,
+                  if (showTextOnTop) textResult,
+                  if (trailing != null)
+                    IconTheme.merge(
+                      data: const IconThemeData(size: 16.0),
+                      child: trailing!,
                     ),
-                ]);
+                ],
+              );
+              if (infoBadge != null) {
+                return Stack(
+                  key: itemKey,
+                  clipBehavior: Clip.none,
+                  children: [
+                    result,
+                    if (infoBadge != null)
+                      PositionedDirectional(end: -3, top: 3, child: infoBadge!),
+                  ],
+                );
               }
               return KeyedSubtree(key: itemKey, child: result);
             default:
@@ -360,19 +365,21 @@ class PaneItem extends NavigationPaneItem {
             !index.isNegative) {
           final key = PaneItemKeys.of(index, context);
 
-          return Stack(children: [
-            button,
-            Positioned.fill(
-              child: InheritedNavigationView.merge(
-                currentItemIndex: index,
-                currentItemSelected: selected,
-                child: KeyedSubtree(
-                  key: key,
-                  child: maybeBody!.pane!.indicator!,
+          return Stack(
+            children: [
+              button,
+              Positioned.fill(
+                child: InheritedNavigationView.merge(
+                  currentItemIndex: index,
+                  currentItemSelected: selected,
+                  child: KeyedSubtree(
+                    key: key,
+                    child: maybeBody!.pane!.indicator!,
+                  ),
                 ),
               ),
-            ),
-          ]);
+            ],
+          );
         }
 
         return button;
@@ -423,11 +430,7 @@ class PaneItem extends NavigationPaneItem {
 ///   * [PaneItemExpander], which creates hierhical navigation
 class PaneItemSeparator extends NavigationPaneItem {
   /// Creates an item separator.
-  PaneItemSeparator({
-    super.key,
-    this.color,
-    this.thickness,
-  });
+  PaneItemSeparator({super.key, this.color, this.thickness});
 
   /// The color used by the [Divider].
   final Color? color;
@@ -612,7 +615,10 @@ class PaneItemExpander extends PaneItem {
   /// Whether the minimal pane should be closed when the item is tapped
   final bool? closeMinimalPaneOnTap;
 
-  static const kDefaultTrailing = Icon(FluentIcons.chevron_down, size: 8.0);
+  static const kDefaultTrailing = WindowsIcon(
+    WindowsIcons.chevron_down,
+    size: 8.0,
+  );
 
   @override
   Widget build(
@@ -690,10 +696,10 @@ class __PaneItemExpanderState extends State<_PaneItemExpander>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _open = PageStorage.of(context).readState(
+    _open = PageStorage.of(
           context,
-          identifier: 'paneItemExpanderOpen$index',
-        ) as bool? ??
+        ).readState(context, identifier: 'paneItemExpanderOpen$index')
+            as bool? ??
         widget.initiallyExpanded;
 
     if (_open) {
@@ -724,11 +730,9 @@ class __PaneItemExpanderState extends State<_PaneItemExpander>
   void toggleOpen({bool doFlyout = true}) {
     setState(() => _open = !_open);
 
-    PageStorage.of(context).writeState(
+    PageStorage.of(
       context,
-      _open,
-      identifier: 'paneItemExpanderOpen$index',
-    );
+    ).writeState(context, _open, identifier: 'paneItemExpanderOpen$index');
     if (_open) {
       if (useFlyout && doFlyout && flyoutController.isAttached) {
         final body = InheritedNavigationView.of(context);
@@ -757,22 +761,24 @@ class __PaneItemExpanderState extends State<_PaneItemExpander>
                 } else if (item is PaneItemSeparator) {
                   return const MenuFlyoutSeparator();
                 } else if (item is PaneItemHeader) {
-                  return MenuFlyoutItemBuilder(builder: (context) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0,
-                        vertical: 8.0,
-                      ),
-                      margin: const EdgeInsetsDirectional.only(bottom: 4.0),
-                      child: DefaultTextStyle.merge(
-                        style: navigationTheme.itemHeaderTextStyle,
-                        softWrap: false,
-                        maxLines: 1,
-                        overflow: TextOverflow.fade,
-                        child: item.header,
-                      ),
-                    );
-                  });
+                  return MenuFlyoutItemBuilder(
+                    builder: (context) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10.0,
+                          vertical: 8.0,
+                        ),
+                        margin: const EdgeInsetsDirectional.only(bottom: 4.0),
+                        child: DefaultTextStyle.merge(
+                          style: navigationTheme.itemHeaderTextStyle,
+                          softWrap: false,
+                          maxLines: 1,
+                          overflow: TextOverflow.fade,
+                          child: item.header,
+                        ),
+                      );
+                    },
+                  );
                 } else {
                   throw UnsupportedError(
                     '${item.runtimeType} is not a supported item type',
@@ -799,13 +805,15 @@ class __PaneItemExpanderState extends State<_PaneItemExpander>
     final theme = FluentTheme.of(context);
     final body = InheritedNavigationView.of(context);
 
-    assert(body.pane!.selected != null,
-        'The selected of NavigationPane can not be null!Try offer a value in NavigationPane!');
+    assert(
+      body.pane!.selected != null,
+      'The selected of NavigationPane can not be null!Try offer a value in NavigationPane!',
+    );
 
-    _open = PageStorage.of(context).readState(
+    _open = PageStorage.of(
           context,
-          identifier: 'paneItemExpanderOpen$index',
-        ) as bool? ??
+        ).readState(context, identifier: 'paneItemExpanderOpen$index')
+            as bool? ??
         _open;
 
     // Indexes
@@ -830,10 +838,12 @@ class __PaneItemExpanderState extends State<_PaneItemExpander>
           child: AnimatedBuilder(
             animation: controller,
             builder: (context, child) => RotationTransition(
-              turns: controller.drive(Tween<double>(
-                begin: _open ? 0 : 1.0,
-                end: _open ? 0.5 : 0.5,
-              )),
+              turns: controller.drive(
+                Tween<double>(
+                  begin: _open ? 0 : 1.0,
+                  end: _open ? 0.5 : 0.5,
+                ),
+              ),
               child: child,
             ),
             child: widget.item.trailing!,
@@ -859,59 +869,59 @@ class __PaneItemExpanderState extends State<_PaneItemExpander>
     switch (displayMode) {
       case PaneDisplayMode.open:
       case PaneDisplayMode.minimal:
-        return Column(mainAxisSize: MainAxisSize.min, children: [
-          item,
-          AnimatedSize(
-            duration: theme.fastAnimationDuration,
-            curve: Curves.easeIn,
-            child: !_open
-                ? const SizedBox(width: double.infinity)
-                : Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: widget.items.map((item) {
-                      if (item is PaneItem) {
-                        final i = item.copyWith(
-                          icon: Padding(
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            item,
+            AnimatedSize(
+              duration: theme.fastAnimationDuration,
+              curve: Curves.easeIn,
+              child: !_open
+                  ? const SizedBox(width: double.infinity)
+                  : Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: widget.items.map((item) {
+                        if (item is PaneItem) {
+                          final i = item.copyWith(
+                            icon: Padding(
+                              padding: _PaneItemExpander.leadingPadding,
+                              child: item.icon,
+                            ),
+                          );
+                          return i.build(
+                            context,
+                            body.pane!.isSelected(item),
+                            () => widget.onItemPressed?.call(item),
+                            displayMode: widget.displayMode,
+                            showTextOnTop: widget.showTextOnTop,
+                            itemIndex: body.pane!.effectiveIndexOf(item),
+                          );
+                        } else if (item is PaneItemHeader) {
+                          return Padding(
                             padding: _PaneItemExpander.leadingPadding,
-                            child: item.icon,
-                          ),
-                        );
-                        return i.build(
-                          context,
-                          body.pane!.isSelected(item),
-                          () => widget.onItemPressed?.call(item),
-                          displayMode: widget.displayMode,
-                          showTextOnTop: widget.showTextOnTop,
-                          itemIndex: body.pane!.effectiveIndexOf(item),
-                        );
-                      } else if (item is PaneItemHeader) {
-                        return Padding(
-                          padding: _PaneItemExpander.leadingPadding,
-                          child: item.build(context),
-                        );
-                      } else if (item is PaneItemSeparator) {
-                        return item.build(
-                          context,
-                          widget.displayMode == PaneDisplayMode.top
-                              ? Axis.vertical
-                              : Axis.horizontal,
-                        );
-                      } else {
-                        throw UnsupportedError(
-                          '${item.runtimeType} is not a supported item type',
-                        );
-                      }
-                    }).toList(),
-                  ),
-          ),
-        ]);
+                            child: item.build(context),
+                          );
+                        } else if (item is PaneItemSeparator) {
+                          return item.build(
+                            context,
+                            widget.displayMode == PaneDisplayMode.top
+                                ? Axis.vertical
+                                : Axis.horizontal,
+                          );
+                        } else {
+                          throw UnsupportedError(
+                            '${item.runtimeType} is not a supported item type',
+                          );
+                        }
+                      }).toList(),
+                    ),
+            ),
+          ],
+        );
       case PaneDisplayMode.top:
       case PaneDisplayMode.compact:
-        return FlyoutTarget(
-          controller: flyoutController,
-          child: item,
-        );
+        return FlyoutTarget(controller: flyoutController, child: item);
       case PaneDisplayMode.auto:
         return item;
     }
@@ -950,10 +960,7 @@ class _PaneItemExpanderMenuItem extends MenuFlyoutItemBase {
         return MenuFlyoutItem(
           selected: isSelected,
           onPressed: onPressed,
-          leading: IconTheme.merge(
-            data: iconTheme,
-            child: item.icon,
-          ),
+          leading: IconTheme.merge(data: iconTheme, child: item.icon),
           text: DefaultTextStyle(
             style: textStyle,
             child: item.title ?? const SizedBox.shrink(),
@@ -1062,9 +1069,10 @@ extension ItemExtension on Widget {
           return (title.textSpan ??
               TextSpan(
                 text: title.data ?? '',
-                style:
-                    title.getProperty<TextStyle>()?.merge(def as TextStyle?) ??
-                        def as TextStyle?,
+                style: title.getProperty<TextStyle>()?.merge(
+                          def as TextStyle?,
+                        ) ??
+                    def as TextStyle?,
               )) as T?;
         case const (TextStyle):
           return title.style as T?;
