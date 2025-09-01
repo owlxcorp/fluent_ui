@@ -6,31 +6,31 @@ import 'package:flutter/services.dart';
 /// a TreeView has changed.
 ///
 /// Used by [TreeView.onSelectionChanged]
-typedef TreeViewSelectionChangedCallback =
-    Future<void> Function(Iterable<TreeViewItem> selectedItems);
+typedef TreeViewSelectionChangedCallback = Future<void> Function(
+    Iterable<TreeViewItem> selectedItems);
 
 /// A callback that receives a notification that an item has been invoked.
 ///
 /// Used by [TreeView.onItemInvoked]
-typedef TreeViewItemInvoked =
-    Future<void> Function(TreeViewItem item, TreeViewItemInvokeReason reason);
+typedef TreeViewItemInvoked = Future<void> Function(
+    TreeViewItem item, TreeViewItemInvokeReason reason);
 
 /// A callback that receives a notification that an item
 /// received a secondary tap.
 ///
 /// Used by [TreeView.onSecondaryTap]
-typedef TreeViewItemOnSecondaryTap =
-    void Function(TreeViewItem item, TapDownDetails details);
+typedef TreeViewItemOnSecondaryTap = void Function(
+    TreeViewItem item, TapDownDetails details);
 
 /// A callback that receives a notification that the expansion state of an
 /// item has been toggled.
 ///
 /// Used by [TreeView.onItemExpandToggle]
-typedef TreeViewItemOnExpandToggle =
-    Future<void> Function(TreeViewItem item, bool getsExpanded);
+typedef TreeViewItemOnExpandToggle = Future<void> Function(
+    TreeViewItem item, bool getsExpanded);
 
-typedef TreeViewItemGesturesCallback =
-    Map<Type, GestureRecognizerFactory> Function(TreeViewItem item);
+typedef TreeViewItemGesturesCallback = Map<Type, GestureRecognizerFactory>
+    Function(TreeViewItem item);
 
 const double _whiteSpace = 8.0;
 
@@ -213,9 +213,9 @@ class TreeViewItem with Diagnosticable {
     this.semanticLabel,
     this.loadingWidget,
     this.lazy = false,
-  }) : expanded = expanded ?? children.isNotEmpty,
-       _anyExpandableSiblings = false,
-       focusNode = focusNode ?? FocusNode();
+  })  : expanded = expanded ?? children.isNotEmpty,
+        _anyExpandableSiblings = false,
+        focusNode = focusNode ?? FocusNode();
 
   /// Deep copy constructor that can be used to copy an item and all of
   /// its child items. Useful if you want to have multiple trees with the
@@ -803,23 +803,22 @@ class TreeViewState extends State<TreeView> with AutomaticKeepAliveClientMixin {
             cacheExtent: widget.cacheExtent,
             itemExtent: widget.itemExtent,
             addRepaintBoundaries: widget.addRepaintBoundaries,
-            prototypeItem:
-                widget.usePrototypeItem && _items.isNotEmpty
-                    ? _TreeViewItem(
-                      item: _items.first,
-                      selectionMode: widget.selectionMode,
-                      narrowSpacing: widget.narrowSpacing,
-                      gestures: const {},
-                      onInvoked: (_) {},
-                      onSelect: () {},
-                      onSecondaryTap: (details) {},
-                      onExpandToggle: () {},
-                      loadingWidgetFallback: widget.loadingWidget,
-                      alwaysTiggerSelectionToggleForItemsWithoutChildrenSelection:
-                          widget
-                              .alwaysTiggerSelectionToggleForItemsWithoutChildrenSelection,
-                    )
-                    : null,
+            prototypeItem: widget.usePrototypeItem && _items.isNotEmpty
+                ? _TreeViewItem(
+                    item: _items.first,
+                    selectionMode: widget.selectionMode,
+                    narrowSpacing: widget.narrowSpacing,
+                    gestures: const {},
+                    onInvoked: (_) {},
+                    onSelect: () {},
+                    onSecondaryTap: (details) {},
+                    onExpandToggle: () {},
+                    loadingWidgetFallback: widget.loadingWidget,
+                    alwaysTiggerSelectionToggleForItemsWithoutChildrenSelection:
+                        widget
+                            .alwaysTiggerSelectionToggleForItemsWithoutChildrenSelection,
+                  )
+                : null,
             itemCount: _items.length,
             itemBuilder: (context, index) {
               final item = _items[index];
@@ -902,9 +901,8 @@ class TreeViewState extends State<TreeView> with AutomaticKeepAliveClientMixin {
                 },
                 onInvoked: (reason) => _invokeItem(item, reason),
                 loadingWidgetFallback: widget.loadingWidget,
-                alwaysTiggerSelectionToggleForItemsWithoutChildrenSelection:
-                    widget
-                        .alwaysTiggerSelectionToggleForItemsWithoutChildrenSelection,
+                alwaysTiggerSelectionToggleForItemsWithoutChildrenSelection: widget
+                    .alwaysTiggerSelectionToggleForItemsWithoutChildrenSelection,
               );
             },
           ),
@@ -986,74 +984,71 @@ class _TreeViewItem extends StatelessWidget {
       child: HoverButton(
         hitTestBehavior: HitTestBehavior.translucent,
         gestures: gestures,
-        shortcuts:
-            item.isExpandable
-                ? {
-                  const SingleActivator(
-                    LogicalKeyboardKey.arrowLeft,
-                  ): VoidCallbackIntent(() {
-                    if (item.expanded) {
-                      // if the item is expanded, close it
-                      onExpandToggle();
-                    } else if (item.parent != null) {
-                      // if the item is already closed and has a parent
-                      // focus the parent
-                      item.parent!.focusNode.requestFocus();
-                    }
-                  }),
-                  const SingleActivator(
-                    LogicalKeyboardKey.arrowRight,
-                  ): VoidCallbackIntent(() {
-                    if (item.expanded) {
-                      // if the item is already expanded, focus its first child
-                      FocusScope.of(context).nextFocus();
-                    } else {
-                      // expand the item
-                      onExpandToggle();
-                    }
-                  }),
-                }
-                : {
-                  const SingleActivator(
-                    LogicalKeyboardKey.arrowLeft,
-                  ): VoidCallbackIntent(() {
-                    if (item.parent != null) {
-                      // if the item has a parent, focus the parent
-                      item.parent!.focusNode.requestFocus();
-                    }
-                  }),
-                },
-        onPressed:
-            selectionMode == TreeViewSelectionMode.single
-                ? () {
-                  item._focusedByPress = true;
-                  item.focusNode.requestFocus();
-                  FocusTraversalGroup.of(
-                    context,
-                  ).invalidateScopeData(item.focusNode.nearestScope!);
-                  onSelect();
-                  onInvoked(TreeViewItemInvokeReason.pressed);
-                }
-                : () {
-                  item._focusedByPress = true;
-                  item.focusNode.requestFocus();
-                  FocusTraversalGroup.of(
-                    context,
-                  ).invalidateScopeData(item.focusNode.nearestScope!);
-                  onInvoked(TreeViewItemInvokeReason.pressed);
-                },
-        onFocusTap: _onCheckboxInvoked,
-        onFocusChange:
-            selectionMode == TreeViewSelectionMode.single
-                ? (focused) {
-                  if (focused && !item._focusedByPress) {
-                    onSelect();
+        shortcuts: item.isExpandable
+            ? {
+                const SingleActivator(
+                  LogicalKeyboardKey.arrowLeft,
+                ): VoidCallbackIntent(() {
+                  if (item.expanded) {
+                    // if the item is expanded, close it
+                    onExpandToggle();
+                  } else if (item.parent != null) {
+                    // if the item is already closed and has a parent
+                    // focus the parent
+                    item.parent!.focusNode.requestFocus();
                   }
-                  if (!focused) item._focusedByPress = false;
+                }),
+                const SingleActivator(
+                  LogicalKeyboardKey.arrowRight,
+                ): VoidCallbackIntent(() {
+                  if (item.expanded) {
+                    // if the item is already expanded, focus its first child
+                    FocusScope.of(context).nextFocus();
+                  } else {
+                    // expand the item
+                    onExpandToggle();
+                  }
+                }),
+              }
+            : {
+                const SingleActivator(
+                  LogicalKeyboardKey.arrowLeft,
+                ): VoidCallbackIntent(() {
+                  if (item.parent != null) {
+                    // if the item has a parent, focus the parent
+                    item.parent!.focusNode.requestFocus();
+                  }
+                }),
+              },
+        onPressed: selectionMode == TreeViewSelectionMode.single
+            ? () {
+                item._focusedByPress = true;
+                item.focusNode.requestFocus();
+                FocusTraversalGroup.of(
+                  context,
+                ).invalidateScopeData(item.focusNode.nearestScope!);
+                onSelect();
+                onInvoked(TreeViewItemInvokeReason.pressed);
+              }
+            : () {
+                item._focusedByPress = true;
+                item.focusNode.requestFocus();
+                FocusTraversalGroup.of(
+                  context,
+                ).invalidateScopeData(item.focusNode.nearestScope!);
+                onInvoked(TreeViewItemInvokeReason.pressed);
+              },
+        onFocusTap: _onCheckboxInvoked,
+        onFocusChange: selectionMode == TreeViewSelectionMode.single
+            ? (focused) {
+                if (focused && !item._focusedByPress) {
+                  onSelect();
                 }
-                : (focused) {
-                  if (!focused) item._focusedByPress = false;
-                },
+                if (!focused) item._focusedByPress = false;
+              }
+            : (focused) {
+                if (!focused) item._focusedByPress = false;
+              },
         autofocus: item.autofocus,
         focusNode: item.focusNode,
         semanticLabel: item.semanticLabel,
@@ -1073,38 +1068,35 @@ class _TreeViewItem extends StatelessWidget {
                 // Indentation and selection indicator for single selection mode.
                 Container(
                   constraints: BoxConstraints(
-                    minHeight:
-                        selectionMode == TreeViewSelectionMode.multiple
-                            ? 28.0
-                            : 26.0,
+                    minHeight: selectionMode == TreeViewSelectionMode.multiple
+                        ? 28.0
+                        : 26.0,
                   ),
                   padding: EdgeInsetsDirectional.only(
-                    start:
-                        selectionMode == TreeViewSelectionMode.multiple
-                            ? !narrowSpacing
-                                ? item.depth * _whiteSpace * 3
-                                // The extra 4 pixels are added as the checkbox's
-                                // width is not a multiple of 8.
-                                : item.depth * (_whiteSpace * 2 + 4)
-                            : !narrowSpacing
+                    start: selectionMode == TreeViewSelectionMode.multiple
+                        ? !narrowSpacing
+                            ? item.depth * _whiteSpace * 3
+                            // The extra 4 pixels are added as the checkbox's
+                            // width is not a multiple of 8.
+                            : item.depth * (_whiteSpace * 2 + 4)
+                        : !narrowSpacing
                             ? item.depth * _whiteSpace * 2
                             : item.depth * _whiteSpace,
                   ),
                   decoration: BoxDecoration(
-                    color:
-                        item.backgroundColor?.resolve(states) ??
+                    color: item.backgroundColor?.resolve(states) ??
                         ButtonThemeData.uncheckedInputColor(
                           theme,
                           [
-                                TreeViewSelectionMode.multiple,
-                                TreeViewSelectionMode.none,
-                              ].contains(selectionMode)
+                            TreeViewSelectionMode.multiple,
+                            TreeViewSelectionMode.none,
+                          ].contains(selectionMode)
                               ? states
                               : selected && (states.isPressed || states.isNone)
-                              ? {WidgetState.hovered}
-                              : selected && states.isHovered
-                              ? {WidgetState.pressed}
-                              : states,
+                                  ? {WidgetState.hovered}
+                                  : selected && states.isHovered
+                                      ? {WidgetState.pressed}
+                                      : states,
                           transparentWhenNone: true,
                         ),
                     borderRadius: BorderRadius.circular(6.0),
@@ -1147,8 +1139,8 @@ class _TreeViewItem extends StatelessWidget {
                                 item.expanded
                                     ? FluentIcons.chevron_down
                                     : direction == TextDirection.ltr
-                                    ? FluentIcons.chevron_right
-                                    : FluentIcons.chevron_left,
+                                        ? FluentIcons.chevron_right
+                                        : FluentIcons.chevron_left,
                                 size: 8.0,
                                 color: itemForegroundColor,
                               ),

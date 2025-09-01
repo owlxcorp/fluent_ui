@@ -83,8 +83,7 @@ enum CommandBarOverflowBehavior {
 /// functionality to trigger an action (e.g., a clickable button), and
 /// it will call the given callback when the action is triggered.
 typedef CommandBarActionItemBuilder = CommandBarItem Function(
-  VoidCallback onPressed,
-);
+    VoidCallback onPressed);
 
 /// Command bars provide quick access to common tasks. This could be
 /// application-level or page-level commands.
@@ -191,8 +190,9 @@ class CommandBarState extends State<CommandBar> {
 
   List<CommandBarItem> get allSecondaryItems {
     return <CommandBarItem>[
-      ..._dynamicallyHiddenPrimaryItems
-          .map((index) => widget.primaryItems[index]),
+      ..._dynamicallyHiddenPrimaryItems.map(
+        (index) => widget.primaryItems[index],
+      ),
       ...widget.secondaryItems,
     ];
   }
@@ -283,8 +283,9 @@ class CommandBarState extends State<CommandBar> {
     CommandBarItemDisplayMode primaryMode,
   ) {
     final theme = FluentTheme.of(context);
-    final builtItems =
-        widget.primaryItems.map((item) => item.build(context, primaryMode));
+    final builtItems = widget.primaryItems.map(
+      (item) => item.build(context, primaryMode),
+    );
     Widget? overflowWidget;
 
     if (widget.secondaryItems.isNotEmpty ||
@@ -298,7 +299,7 @@ class CommandBarState extends State<CommandBar> {
           tooltip: secondaryFlyoutController.isOpen
               ? FluentLocalizations.of(context).seeLess
               : FluentLocalizations.of(context).seeMore,
-          icon: const Icon(FluentIcons.more),
+          icon: const WindowsIcon(WindowsIcons.more),
         );
       }
 
@@ -334,10 +335,7 @@ class CommandBarState extends State<CommandBar> {
         w = listBuilder.call(
           mainAxisAlignment: widget.mainAxisAlignment,
           crossAxisAlignment: widget.crossAxisAlignment,
-          children: [
-            ...builtItems,
-            if (overflowWidget != null) overflowWidget,
-          ],
+          children: [...builtItems, if (overflowWidget != null) overflowWidget],
         );
         break;
       case CommandBarOverflowBehavior.wrap:
@@ -345,10 +343,7 @@ class CommandBarState extends State<CommandBar> {
           direction: widget.direction,
           alignment: _getWrapAlignment(),
           crossAxisAlignment: _getWrapCrossAlignment(),
-          children: [
-            ...builtItems,
-            if (overflowWidget != null) overflowWidget,
-          ],
+          children: [...builtItems, if (overflowWidget != null) overflowWidget],
         );
         break;
       case CommandBarOverflowBehavior.dynamicOverflow:
@@ -427,27 +422,35 @@ class CommandBarState extends State<CommandBar> {
       final displayMode = (widget.isCompact ?? false)
           ? CommandBarItemDisplayMode.inPrimaryCompact
           : CommandBarItemDisplayMode.inPrimary;
-      return Builder(builder: (context) {
-        return _buildForPrimaryMode(context, displayMode);
-      });
+      return Builder(
+        builder: (context) {
+          return _buildForPrimaryMode(context, displayMode);
+        },
+      );
     } else {
-      return LayoutBuilder(builder: (context, constraints) {
-        if (constraints.maxWidth > widget.compactBreakpointWidth!) {
-          return Builder(builder: (context) {
-            return _buildForPrimaryMode(
-              context,
-              CommandBarItemDisplayMode.inPrimary,
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth > widget.compactBreakpointWidth!) {
+            return Builder(
+              builder: (context) {
+                return _buildForPrimaryMode(
+                  context,
+                  CommandBarItemDisplayMode.inPrimary,
+                );
+              },
             );
-          });
-        } else {
-          return Builder(builder: (context) {
-            return _buildForPrimaryMode(
-              context,
-              CommandBarItemDisplayMode.inPrimaryCompact,
+          } else {
+            return Builder(
+              builder: (context) {
+                return _buildForPrimaryMode(
+                  context,
+                  CommandBarItemDisplayMode.inPrimaryCompact,
+                );
+              },
             );
-          });
-        }
-      });
+          }
+        },
+      );
     }
   }
 }
@@ -475,7 +478,7 @@ enum CommandBarItemDisplayMode {
   ///
   /// Normally you would want to render an item in this visual context as a
   /// [ListTile].
-  inSecondary;
+  inSecondary,
 }
 
 /// An individual control displayed within a [CommandBar]. Sub-class this to
@@ -531,10 +534,7 @@ class CommandBarBuilderItem extends CommandBarItem {
 class CommandBarItemInPrimary extends StatelessWidget {
   final Widget child;
 
-  const CommandBarItemInPrimary({
-    super.key,
-    required this.child,
-  });
+  const CommandBarItemInPrimary({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -631,7 +631,7 @@ class CommandBarButton extends CommandBarItem {
                 children: [
                   if (showIcon)
                     IconTheme.merge(
-                      data: const IconThemeData(size: 16),
+                      data: const IconThemeData(size: 16.0),
                       child: icon!,
                     ),
                   if (showIcon && showLabel) const SizedBox(width: 10),
@@ -648,10 +648,7 @@ class CommandBarButton extends CommandBarItem {
           ),
         );
         if (tooltip != null) {
-          return Tooltip(
-            message: tooltip!,
-            child: button,
-          );
+          return Tooltip(message: tooltip!, child: button);
         }
         return button;
       case CommandBarItemDisplayMode.inSecondary:
@@ -683,11 +680,7 @@ class CommandBarButton extends CommandBarItem {
 ///   * [Divider], used to render the separator
 class CommandBarSeparator extends CommandBarItem {
   /// Creates a command bar item separator.
-  const CommandBarSeparator({
-    super.key,
-    this.color,
-    this.thickness,
-  });
+  const CommandBarSeparator({super.key, this.color, this.thickness});
 
   /// Override the color used by the [Divider].
   final Color? color;
