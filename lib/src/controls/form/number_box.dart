@@ -318,27 +318,27 @@ class NumberBox<T extends num> extends StatefulWidget {
     this.textInputAction,
     this.onEditingComplete,
   }) : assert(
-         (precision != null &&
-                 pattern == null &&
-                 formatter == null &&
-                 format == null) ||
-             (precision == null &&
-                 pattern != null &&
-                 formatter == null &&
-                 format == null) ||
-             (precision == null &&
-                 pattern == null &&
-                 formatter != null &&
-                 format == null) ||
-             (precision == null &&
-                 pattern == null &&
-                 formatter == null &&
-                 format != null) ||
-             (precision == null &&
-                 pattern == null &&
-                 formatter == null &&
-                 format == null),
-       );
+          (precision != null &&
+                  pattern == null &&
+                  formatter == null &&
+                  format == null) ||
+              (precision == null &&
+                  pattern != null &&
+                  formatter == null &&
+                  format == null) ||
+              (precision == null &&
+                  pattern == null &&
+                  formatter != null &&
+                  format == null) ||
+              (precision == null &&
+                  pattern == null &&
+                  formatter == null &&
+                  format != null) ||
+              (precision == null &&
+                  pattern == null &&
+                  formatter == null &&
+                  format == null),
+        );
 
   @override
   State<NumberBox<T>> createState() => NumberBoxState<T>();
@@ -670,32 +670,28 @@ class NumberBoxState<T extends num> extends State<NumberBox<T>> {
   }
 
   void incrementSmall() {
-    final value =
-        (num.tryParse(controller.text) ?? widget.value ?? 0) +
+    final value = (num.tryParse(controller.text) ?? widget.value ?? 0) +
         widget.smallChange;
     _updateController(value);
     updateValue();
   }
 
   void decrementSmall() {
-    final value =
-        (num.tryParse(controller.text) ?? widget.value ?? 0) -
+    final value = (num.tryParse(controller.text) ?? widget.value ?? 0) -
         widget.smallChange;
     _updateController(value);
     updateValue();
   }
 
   void incrementLarge() {
-    final value =
-        (num.tryParse(controller.text) ?? widget.value ?? 0) +
+    final value = (num.tryParse(controller.text) ?? widget.value ?? 0) +
         widget.largeChange;
     _updateController(value);
     updateValue();
   }
 
   void decrementLarge() {
-    final value =
-        (num.tryParse(controller.text) ?? widget.value ?? 0) -
+    final value = (num.tryParse(controller.text) ?? widget.value ?? 0) -
         widget.largeChange;
     _updateController(value);
     updateValue();
@@ -713,9 +709,8 @@ class NumberBoxState<T extends num> extends State<NumberBox<T>> {
       value = num.tryParse(controller.text);
       if (value == null && widget.allowExpressions) {
         try {
-          value = ShuntingYardParser()
-              .parse(controller.text)
-              .evaluate(EvaluationType.REAL, ContextModel());
+          value = RealEvaluator(ContextModel())
+              .evaluate(ShuntingYardParser().parse(controller.text));
           // If the value is infinite or not a number, we reset the value with
           // the previous valid value. For example, if the user tap 1024^200
           // (the result is too big), the condition value.isInfinite is true.
@@ -876,50 +871,51 @@ class NumberFormBox<T extends num> extends ControllableFormBox {
     int precision = 2,
     SpinButtonPlacementMode mode = SpinButtonPlacementMode.compact,
   }) : super(
-         builder: (FormFieldState<String> field) {
-           assert(debugCheckHasFluentTheme(field.context));
-           final theme = FluentTheme.of(field.context);
-           void onChangedHandler(T? value) {
-             field.didChange(value.toString());
-             onChanged?.call(value);
-           }
+          builder: (FormFieldState<String> field) {
+            assert(debugCheckHasFluentTheme(field.context));
+            final theme = FluentTheme.of(field.context);
+            void onChangedHandler(T? value) {
+              field.didChange(value.toString());
+              onChanged?.call(value);
+            }
 
-           return UnmanagedRestorationScope(
-             bucket: field.bucket,
-             child: FormRow(
-               padding: EdgeInsets.zero,
-               error: (field.errorText == null) ? null : Text(field.errorText!),
-               child: NumberBox<T>(
-                 focusNode: focusNode,
-                 autofocus: autofocus,
-                 showCursor: showCursor,
-                 cursorColor: cursorColor,
-                 cursorHeight: cursorHeight,
-                 cursorRadius: cursorRadius,
-                 cursorWidth: cursorWidth,
-                 onChanged: onChanged == null ? null : onChangedHandler,
-                 highlightColor: (field.errorText == null)
-                     ? highlightColor
-                     : errorHighlightColor ??
-                           Colors.red.defaultBrushFor(theme.brightness),
-                 placeholder: placeholder,
-                 placeholderStyle: placeholderStyle,
-                 leadingIcon: leadingIcon,
-                 value: value,
-                 max: max,
-                 min: min,
-                 allowExpressions: allowExpressions,
-                 clearButton: clearButton,
-                 largeChange: largeChange,
-                 smallChange: smallChange,
-                 precision: precision,
-                 inputFormatters: inputFormatters,
-                 mode: mode,
-               ),
-             ),
-           );
-         },
-       );
+            return UnmanagedRestorationScope(
+              bucket: field.bucket,
+              child: FormRow(
+                padding: EdgeInsets.zero,
+                error:
+                    (field.errorText == null) ? null : Text(field.errorText!),
+                child: NumberBox<T>(
+                  focusNode: focusNode,
+                  autofocus: autofocus,
+                  showCursor: showCursor,
+                  cursorColor: cursorColor,
+                  cursorHeight: cursorHeight,
+                  cursorRadius: cursorRadius,
+                  cursorWidth: cursorWidth,
+                  onChanged: onChanged == null ? null : onChangedHandler,
+                  highlightColor: (field.errorText == null)
+                      ? highlightColor
+                      : errorHighlightColor ??
+                          Colors.red.defaultBrushFor(theme.brightness),
+                  placeholder: placeholder,
+                  placeholderStyle: placeholderStyle,
+                  leadingIcon: leadingIcon,
+                  value: value,
+                  max: max,
+                  min: min,
+                  allowExpressions: allowExpressions,
+                  clearButton: clearButton,
+                  largeChange: largeChange,
+                  smallChange: smallChange,
+                  precision: precision,
+                  inputFormatters: inputFormatters,
+                  mode: mode,
+                ),
+              ),
+            );
+          },
+        );
 
   @override
   FormFieldState<String> createState() => TextFormBoxState();
