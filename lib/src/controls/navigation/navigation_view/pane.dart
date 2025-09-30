@@ -1253,27 +1253,17 @@ class _OpenNavigationPane extends StatefulWidget {
             pane.changeTo(item);
             onChanged?.call(item);
           },
-        );
-      } else if (item is PaneItem) {
-        final selected = pane.isSelected(item);
-        return item.build(
-          context,
-          selected,
-          () {
+          onItemPressed: (item) {
             pane.changeTo(item);
             onChanged?.call(item);
           },
         );
       } else if (item is PaneItem) {
         final selected = pane.isSelected(item);
-        return item.build(
-          context,
-          selected,
-          () {
-            pane.changeTo(item);
-            onChanged?.call(item);
-          },
-        );
+        return item.build(context, selected, () {
+          pane.changeTo(item);
+          onChanged?.call(item);
+        });
       } else if (item is PaneItemWidgetAdapter) {
         return item.build(context);
       } else {
