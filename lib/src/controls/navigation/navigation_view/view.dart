@@ -701,22 +701,28 @@ class NavigationViewState extends State<NavigationView> {
                   children: [
                     appBar,
                     Expanded(
-                      child: PaneScrollConfiguration(
-                        child: Mica(
-                          backgroundColor: theme.backgroundColor,
-                          child: _OpenNavigationPane(
-                            theme: theme,
-                            pane: pane,
-                            paneKey: _panelKey,
-                            listKey: _listKey,
-                            initiallyOpen: PageStorage.of(context).readState(
-                                  context,
-                                  identifier: 'openModeOpen',
-                                ) as bool? ??
-                                mounted,
-                            onAnimationEnd: _animationEndCallback,
+                      child: Row(
+                        children: [
+                          PaneScrollConfiguration(
+                            child: Mica(
+                              backgroundColor: theme.backgroundColor,
+                              child: _OpenNavigationPane(
+                                theme: theme,
+                                pane: pane,
+                                paneKey: _panelKey,
+                                listKey: _listKey,
+                                initiallyOpen:
+                                    PageStorage.of(context).readState(
+                                          context,
+                                          identifier: 'openModeOpen',
+                                        ) as bool? ??
+                                        mounted,
+                                onAnimationEnd: _animationEndCallback,
+                              ),
+                            ),
                           ),
-                        ),
+                          Expanded(child: content),
+                        ],
                       ),
                     ),
                   ],
