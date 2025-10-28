@@ -46,13 +46,13 @@ class ListTile extends StatelessWidget {
     this.contentAlignment = CrossAxisAlignment.center,
     this.contentPadding = kDefaultListTilePadding,
     this.margin = kDefaultListTileMargin,
-  }) : assert(
-         subtitle != null ? title != null : true,
-         'To have a subtitle, there must be a title',
-       ),
-       selected = false,
-       selectionMode = ListTileSelectionMode.none,
-       onSelectionChange = null;
+  })  : assert(
+          subtitle != null ? title != null : true,
+          'To have a subtitle, there must be a title',
+        ),
+        selected = false,
+        selectionMode = ListTileSelectionMode.none,
+        onSelectionChange = null;
 
   /// A selectable list tile.
   const ListTile.selectable({
@@ -75,9 +75,9 @@ class ListTile extends StatelessWidget {
     this.contentPadding = kDefaultListTilePadding,
     this.margin = kDefaultListTileMargin,
   }) : assert(
-         subtitle != null ? title != null : true,
-         'To have a subtitle, there must be a title',
-       );
+          subtitle != null ? title != null : true,
+          'To have a subtitle, there must be a title',
+        );
 
   /// The background color of the button.
   ///
@@ -308,9 +308,8 @@ class ListTile extends StatelessWidget {
 
         return Semantics(
           container: true,
-          selected: selectionMode == ListTileSelectionMode.none
-              ? null
-              : selected,
+          selected:
+              selectionMode == ListTileSelectionMode.none ? null : selected,
           child: FocusBorder(
             focused: states.isFocused,
             renderOutside: false,
@@ -338,9 +337,11 @@ class ListTile extends StatelessWidget {
                             child: ExcludeFocus(
                               child: Checkbox(
                                 checked: selected,
-                                onChanged: (v) {
-                                  onSelectionChange?.call(v ?? false);
-                                },
+                                onChanged: onSelectionChange == null
+                                    ? null
+                                    : (v) {
+                                        onSelectionChange!(v ?? false);
+                                      },
                               ),
                             ),
                           ),
@@ -355,8 +356,8 @@ class ListTile extends StatelessWidget {
                               begin: 0.0,
                               end: selected
                                   ? states.isPressed
-                                        ? tileHeight * 0.3
-                                        : tileHeight
+                                      ? tileHeight * 0.3
+                                      : tileHeight
                                   : 0.0,
                             ),
                             builder: (context, height, child) => Center(
