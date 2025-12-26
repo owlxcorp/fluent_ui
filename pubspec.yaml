@@ -47,3 +47,6 @@ flutter:
     - family: FluentIcons
       fonts:
         - asset: fonts/FluentIcons.ttf
+    - family: SegoeIcons          # Add this
+      fonts:                       # Add this
+        - asset: fonts/SegoeIcons.ttf  # Add this
