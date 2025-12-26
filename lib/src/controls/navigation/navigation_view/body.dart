@@ -5,7 +5,7 @@ part of 'view.dart';
 ///
 /// See also:
 ///   * [NavigationView], used alongside this to navigate through pages
-///   * [NavigationAppBar], the app top bar
+///   * [TitleBar], the app title bar
 class _NavigationBody extends StatefulWidget {
   /// Creates a navigation body.
   ///

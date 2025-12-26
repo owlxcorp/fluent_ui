@@ -90,7 +90,6 @@ class IconButton extends BaseButton {
     super.style,
     super.focusable = true,
     this.iconButtonMode,
-    super.cursor,
   }) : super(child: icon);
 
   /// How this icon button will behave.

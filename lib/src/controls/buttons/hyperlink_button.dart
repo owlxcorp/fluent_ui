@@ -53,7 +53,6 @@ class HyperlinkButton extends BaseButton {
     super.autofocus = false,
     super.style,
     super.focusable = true,
-    super.cursor,
   });
 
   @override

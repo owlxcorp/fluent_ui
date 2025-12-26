@@ -179,9 +179,10 @@ class TitleBar extends StatelessWidget {
                 children: [
                   ?endHeader,
                   // min drag region
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(minWidth: 48),
-                  ),
+                  if (title == null && subtitle == null)
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(minWidth: 48),
+                    ),
                   if (captionControls != null)
                     Flexible(child: captionControls!),
                 ],
