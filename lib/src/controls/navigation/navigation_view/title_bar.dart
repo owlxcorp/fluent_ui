@@ -584,7 +584,7 @@ class PaneToggleButton extends StatelessWidget {
       child: Tooltip(
         message: 'Toggle navigation',
         child: IconButton(
-          icon: const Icon(WindowsIcons.global_nav_button),
+          icon: const Icon(FluentIcons.global_nav_button),
           onPressed:
               onPressed ??
               () {
@@ -627,7 +627,7 @@ class PaneBackButton extends StatelessWidget {
       child: Tooltip(
         message: localizations.backButtonTooltip,
         child: IconButton(
-          icon: const Icon(WindowsIcons.back),
+          icon: const Icon(FluentIcons.back),
           onPressed: onPressed,
         ),
       ),
