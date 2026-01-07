@@ -710,6 +710,8 @@ class PaneItemExpander extends PaneItem {
     super.onTap,
     this.initiallyExpanded = false,
     this.closeMinimalPaneOnTap,
+    this.onExpandedChanged,
+    this.stateKey,
   });
 
   /// The child items contained within this expander.
@@ -720,6 +722,33 @@ class PaneItemExpander extends PaneItem {
 
   /// Whether the minimal pane should be closed when the item is tapped
   final bool? closeMinimalPaneOnTap;
+
+  /// Called when the expander is expanded or collapsed.
+  ///
+  /// The callback receives the new expanded state (true = expanded, false = collapsed).
+  /// This is useful for reacting to user-initiated expand/collapse actions,
+  /// such as closing other expanders when one is opened.
+  final ValueChanged<bool>? onExpandedChanged;
+
+  /// A key that can be used to programmatically control the expander state.
+  ///
+  /// Pass a [GlobalKey<PaneItemExpanderState>] to access the expander's state
+  /// and call methods like [PaneItemExpanderState.isExpanded] setter to
+  /// programmatically expand or collapse the item.
+  ///
+  /// Example:
+  /// ```dart
+  /// final expanderKey = GlobalKey<PaneItemExpanderState>();
+  ///
+  /// PaneItemExpander(
+  ///   stateKey: expanderKey,
+  ///   // ...
+  /// )
+  ///
+  /// // Later, to expand programmatically:
+  /// expanderKey.currentState?.isExpanded = true;
+  /// ```
+  final GlobalKey<PaneItemExpanderState>? stateKey;
 
   /// The default trailing icon for expanders.
   static const kDefaultTrailing = WindowsIcon(
@@ -743,8 +772,8 @@ class PaneItemExpander extends PaneItem {
     final mode = displayMode ?? maybeBody.displayMode;
 
     return RepaintBoundary(
-      child: _PaneItemExpander(
-        key: key,
+      child: PaneItemExpanderWidget(
+        key: stateKey ?? key,
         item: this,
         items: items,
         displayMode: mode,
@@ -753,6 +782,7 @@ class PaneItemExpander extends PaneItem {
         onPressed: onPressed,
         onItemPressed: onItemPressed,
         initiallyExpanded: initiallyExpanded,
+        onExpandedChanged: onExpandedChanged,
         depth: depth,
       ),
     );
@@ -771,8 +801,19 @@ class PaneItemExpander extends PaneItem {
   }
 }
 
-class _PaneItemExpander extends StatefulWidget {
-  const _PaneItemExpander({
+/// The widget that renders a [PaneItemExpander] in the navigation pane.
+///
+/// This widget is created by [PaneItemExpander.build] and handles:
+/// - Expand/collapse animations
+/// - State persistence using [PageStorage]
+/// - Flyout menu display for compact/minimal modes
+/// - Nested expander support with depth tracking
+///
+/// Use [PaneItemExpander.stateKey] with a [GlobalKey<PaneItemExpanderState>]
+/// to access this widget's state for programmatic control.
+class PaneItemExpanderWidget extends StatefulWidget {
+  /// Creates a pane item expander widget.
+  const PaneItemExpanderWidget({
     required this.item,
     required this.items,
     required this.displayMode,
@@ -781,24 +822,43 @@ class _PaneItemExpander extends StatefulWidget {
     required this.onPressed,
     required this.onItemPressed,
     required this.initiallyExpanded,
+    this.onExpandedChanged,
     this.depth = 0,
     super.key,
   });
 
+  /// The pane item this widget represents.
   final PaneItem item;
+
+  /// The child items contained within this expander.
   final List<NavigationPaneItem> items;
+
+  /// The current display mode of the navigation pane.
   final PaneDisplayMode displayMode;
+
+  /// Whether to show text on top display mode.
   final bool showTextOnTop;
+
+  /// Whether this expander is selected.
   final bool selected;
+
+  /// Called when the expander is pressed.
   final VoidCallback? onPressed;
+
+  /// Called when a child item is pressed.
   final ValueChanged<PaneItem>? onItemPressed;
+
+  /// Whether the expander starts in an expanded state.
   final bool initiallyExpanded;
+
+  /// Called when the expander is expanded or collapsed.
+  final ValueChanged<bool>? onExpandedChanged;
 
   /// The depth level of this expander in the hierarchy (0 = root level)
   final int depth;
 
   @override
-  State<_PaneItemExpander> createState() => __PaneItemExpanderState();
+  State<PaneItemExpanderWidget> createState() => PaneItemExpanderState();
 }
 
 /// State for managing expandable navigation items.
@@ -808,7 +868,25 @@ class _PaneItemExpander extends StatefulWidget {
 /// - State persistence using [PageStorage]
 /// - Flyout menu display for compact/minimal modes
 /// - Nested expander support with depth tracking
-class __PaneItemExpanderState extends State<_PaneItemExpander>
+///
+/// You can access this state using a [GlobalKey<PaneItemExpanderState>]
+/// passed to [PaneItemExpander.stateKey] to programmatically control
+/// the expander:
+///
+/// ```dart
+/// final expanderKey = GlobalKey<PaneItemExpanderState>();
+///
+/// // In your PaneItemExpander:
+/// PaneItemExpander(
+///   stateKey: expanderKey,
+///   // ...
+/// )
+///
+/// // To expand/collapse programmatically:
+/// expanderKey.currentState?.isExpanded = true;  // expand
+/// expanderKey.currentState?.isExpanded = false; // collapse
+/// ```
+class PaneItemExpanderState extends State<PaneItemExpanderWidget>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   final flyoutController = FlyoutController();
 
@@ -824,6 +902,17 @@ class __PaneItemExpanderState extends State<_PaneItemExpander>
 
   /// Whether the expander is currently expanded.
   bool get isExpanded => _open;
+
+  /// Sets the expanded state of this expander.
+  ///
+  /// Use this to programmatically expand or collapse the expander.
+  /// If the value is the same as the current state, nothing happens.
+  set isExpanded(bool value) {
+    if (_open != value) {
+      toggleOpen();
+    }
+  }
+
   late final AnimationController controller = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 100),
@@ -882,9 +971,17 @@ class __PaneItemExpanderState extends State<_PaneItemExpander>
     return widget.items.any(checkSelected);
   }
 
+  /// Toggles the expanded state of this expander.
+  ///
+  /// If [doFlyout] is true and the display mode uses flyouts (compact/top),
+  /// the flyout will be shown or hidden accordingly.
   void toggleOpen({bool doFlyout = true}) {
     if (!mounted) return;
     setState(() => _open = !_open);
+
+    // Notify listeners of the state change
+    widget.onExpandedChanged?.call(_open);
+
     final view = NavigationView.of(context);
     final viewData = NavigationView.dataOf(context);
 
