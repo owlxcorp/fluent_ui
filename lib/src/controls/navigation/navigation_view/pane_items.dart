@@ -909,7 +909,7 @@ class PaneItemExpanderState extends State<PaneItemExpanderWidget>
   /// If the value is the same as the current state, nothing happens.
   set isExpanded(bool value) {
     if (_open != value) {
-      toggleOpen();
+      toggleOpen(forceValue: value);
     }
   }
 
@@ -971,13 +971,21 @@ class PaneItemExpanderState extends State<PaneItemExpanderWidget>
     return widget.items.any(checkSelected);
   }
 
-  /// Toggles the expanded state of this expander.
+  /// Toggles or sets the expanded state of this expander.
   ///
   /// If [doFlyout] is true and the display mode uses flyouts (compact/top),
   /// the flyout will be shown or hidden accordingly.
-  void toggleOpen({bool doFlyout = true}) {
+  ///
+  /// If [forceValue] is provided, the state will be set to that value instead
+  /// of being toggled. This is useful for programmatic control where you want
+  /// to ensure a specific state.
+  void toggleOpen({bool doFlyout = true, bool? forceValue}) {
     if (!mounted) return;
-    setState(() => _open = !_open);
+
+    final newValue = forceValue ?? !_open;
+    if (_open == newValue) return; // No change needed
+
+    setState(() => _open = newValue);
 
     // Notify listeners of the state change
     widget.onExpandedChanged?.call(_open);
