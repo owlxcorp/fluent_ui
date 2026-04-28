@@ -148,7 +148,17 @@ class TitleBar extends StatelessWidget {
           // there is content
           height: TitleBar.calculateHeight(this),
         ),
-        child: Row(
+        // Force the title bar's interactive descendants (back button, caption
+        // controls, custom centered content like an org-switcher) to emit
+        // their own semantic nodes instead of being merged with the wrapping
+        // drag-handler GestureDetector. Without this, Flutter web's semantic
+        // optimizer collapses the whole bar into one unlabeled region and
+        // assistive tech / e2e tools (Playwright role queries) can't reach
+        // any of the buttons inside.
+        child: Semantics(
+          container: true,
+          explicitChildNodes: true,
+          child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
@@ -219,6 +229,7 @@ class TitleBar extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

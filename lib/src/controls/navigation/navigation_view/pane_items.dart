@@ -365,7 +365,16 @@ class PaneItem extends NavigationPaneItem {
           }
         }
 
+        // `container: true` forces this PaneItem to emit a dedicated semantic
+        // node (otherwise it gets merged into ancestors like the surrounding
+        // ListView / NavigationPane and individual nav items disappear from
+        // the accessibility tree on web). `button: true` ensures the role is
+        // exposed as a button so screen readers and e2e tooling
+        // (Playwright `getByRole('button', {name: ...})`) can find each item.
         return Semantics(
+          container: true,
+          button: onItemTapped != null,
+          enabled: onItemTapped != null,
           label: titleText.isEmpty ? null : titleText,
           selected: selected,
           child: Container(
