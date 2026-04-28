@@ -203,6 +203,12 @@ class PaneItem extends NavigationPaneItem {
     assert(debugCheckHasFluentTheme(context));
 
     final theme = NavigationPaneTheme.of(context);
+    final fluentTheme = FluentTheme.of(context);
+    final densityAdjustment = fluentTheme.visualDensity.baseSizeAdjustment.dy;
+    final paneItemMinHeight = (kPaneItemMinHeight + densityAdjustment).clamp(
+      0.0,
+      double.infinity,
+    );
 
     final titleText = title?._getProperty<String>() ?? '';
     final baseStyle = title?._getProperty<TextStyle>() ?? const TextStyle();
@@ -270,9 +276,7 @@ class PaneItem extends NavigationPaneItem {
             case PaneDisplayMode.compact:
               return Container(
                 key: key,
-                constraints: const BoxConstraints(
-                  minHeight: kPaneItemMinHeight,
-                ),
+                constraints: BoxConstraints(minHeight: paneItemMinHeight),
                 alignment: AlignmentDirectional.centerStart,
                 padding: theme.iconPadding ?? EdgeInsetsDirectional.zero,
                 child: infoBadge != null
@@ -296,9 +300,7 @@ class PaneItem extends NavigationPaneItem {
 
               return ConstrainedBox(
                 key: key,
-                constraints: const BoxConstraints(
-                  minHeight: kPaneItemMinHeight,
-                ),
+                constraints: BoxConstraints(minHeight: paneItemMinHeight),
                 child: ClipRect(
                   child: Row(
                     children: [
@@ -1005,9 +1007,10 @@ class PaneItemExpanderState extends State<PaneItemExpanderWidget>
         final displayMode = body.displayMode;
         final navigationTheme = NavigationPaneTheme.of(context);
 
+        final textDirection = Directionality.of(context);
         flyoutController.showFlyout<void>(
           placementMode: displayMode == PaneDisplayMode.compact
-              ? FlyoutPlacementMode.rightTop
+              ? FlyoutPlacementMode.rightTop.resolve(textDirection)
               : FlyoutPlacementMode.bottomCenter,
           forceAvailableSpace: true,
           barrierColor: Colors.transparent,

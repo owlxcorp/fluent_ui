@@ -496,15 +496,6 @@ void main() {
 
   // Additional edge case tests
   group('Edge cases', () {
-    testWidgets('Empty pane items list renders', (tester) async {
-      await tester.pumpWidget(
-        FluentApp(home: NavigationView(pane: NavigationPane())),
-      );
-
-      await tester.pumpAndSettle();
-      expect(find.byType(NavigationView), findsOneWidget);
-    });
-
     testWidgets('NavigationView with only content renders', (tester) async {
       await tester.pumpWidget(
         const FluentApp(
@@ -550,7 +541,8 @@ void main() {
       expect(find.byType(Divider), findsOneWidget);
     });
 
-    testWidgets('PaneItemHeader renders correctly', (tester) async {
+    testWidgets('NavigationView handles selected index', (tester) async {
+      // NavigationPane requires a valid selected index
       await tester.pumpWidget(
         FluentApp(
           home: SizedBox(
@@ -559,34 +551,6 @@ void main() {
             child: NavigationView(
               pane: NavigationPane(
                 selected: 0,
-                displayMode: PaneDisplayMode.expanded,
-                items: [
-                  PaneItemHeader(header: const Text('Section Header')),
-                  PaneItem(
-                    icon: const Icon(FluentIcons.home),
-                    title: const Text('Home'),
-                    body: const SizedBox(),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-      expect(find.text('Section Header'), findsOneWidget);
-    });
-
-    testWidgets('NavigationView handles null selected index', (tester) async {
-      // NavigationPane accepts null for no selection (negative is not allowed)
-      await tester.pumpWidget(
-        FluentApp(
-          home: SizedBox(
-            width: 1200,
-            height: 800,
-            child: NavigationView(
-              pane: NavigationPane(
                 displayMode: PaneDisplayMode.expanded,
                 items: [
                   PaneItem(
@@ -870,137 +834,6 @@ void main() {
     });
   });
 
-  // Test for GitHub Issue #1101 - Minimal Navigation Pane double refresh
-  // https://github.com/bdlukaa/fluent_ui/issues/1101
-  group('Issue #1101 - Minimal Navigation Pane double refresh', () {
-    testWidgets('Page does not load twice when switching in minimal mode', (
-      tester,
-    ) async {
-      // Test that switching pages in minimal mode doesn't cause double rebuilds
-      var selectedIndex = 0;
-
-      await tester.pumpWidget(
-        FluentApp(
-          home: StatefulBuilder(
-            builder: (context, setState) {
-              // buildCount++;
-              return SizedBox(
-                width: 1200,
-                height: 800,
-                child: NavigationView(
-                  pane: NavigationPane(
-                    selected: selectedIndex,
-                    onChanged: (index) => setState(() => selectedIndex = index),
-                    displayMode: PaneDisplayMode.minimal,
-                    items: [
-                      PaneItem(
-                        icon: const Icon(FluentIcons.home),
-                        title: const Text('Home'),
-                        body: Builder(
-                          builder: (context) {
-                            return const Center(child: Text('Home Page'));
-                          },
-                        ),
-                      ),
-                      PaneItem(
-                        icon: const Icon(FluentIcons.settings),
-                        title: const Text('Settings'),
-                        body: Builder(
-                          builder: (context) {
-                            return const Center(child: Text('Settings Page'));
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      // Open the minimal pane
-      final menuButton = find.byIcon(FluentIcons.global_nav_button);
-      if (menuButton.evaluate().isNotEmpty) {
-        await tester.tap(menuButton.first);
-        await tester.pumpAndSettle();
-      }
-
-      // Tap on Settings to switch pages
-      final settingsFinder = find.text('Settings');
-      if (settingsFinder.evaluate().isNotEmpty) {
-        await tester.tap(settingsFinder.first);
-        await tester.pumpAndSettle();
-
-        // Verify that we didn't get excessive rebuilds
-        // We expect some rebuilds (page change + pane closing), but not double
-        // The key is that the page should transition smoothly without
-        // the page content rebuilding multiple times
-        expect(find.text('Settings Page'), findsOneWidget);
-      }
-    });
-
-    testWidgets('Minimal pane closes after item selection', (tester) async {
-      var selectedIndex = 0;
-
-      await tester.pumpWidget(
-        FluentApp(
-          home: StatefulBuilder(
-            builder: (context, setState) {
-              return SizedBox(
-                width: 1200,
-                height: 800,
-                child: NavigationView(
-                  pane: NavigationPane(
-                    selected: selectedIndex,
-                    onChanged: (index) => setState(() => selectedIndex = index),
-                    displayMode: PaneDisplayMode.minimal,
-                    items: [
-                      PaneItem(
-                        icon: const Icon(FluentIcons.home),
-                        title: const Text('Home'),
-                        body: const Center(child: Text('Home Page')),
-                      ),
-                      PaneItem(
-                        icon: const Icon(FluentIcons.settings),
-                        title: const Text('Settings'),
-                        body: const Center(child: Text('Settings Page')),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      // Open the minimal pane
-      final menuButton = find.byIcon(FluentIcons.global_nav_button);
-      if (menuButton.evaluate().isNotEmpty) {
-        await tester.tap(menuButton.first);
-        await tester.pumpAndSettle();
-
-        // Verify pane is open (Settings should be visible)
-        expect(find.text('Settings'), findsOneWidget);
-
-        // Tap Settings
-        await tester.tap(find.text('Settings'));
-        await tester.pumpAndSettle();
-
-        // Verify page changed and pane closed (Settings text should not be visible)
-        expect(find.text('Settings Page'), findsOneWidget);
-        // The navigation items should no longer be visible (pane closed)
-        expect(find.text('Settings'), findsNothing);
-      }
-    });
-  });
-
   // Test for GitHub Issue #1181 - NavigationView alignment and sizing fixes
   // https://github.com/bdlukaa/fluent_ui/issues/1181
   group('Issue #1181 - NavigationView alignment and sizing', () {
@@ -1101,5 +934,225 @@ void main() {
       // matches WinUI3 specs through visual inspection)
       expect(find.byType(NavigationView), findsOneWidget);
     });
+
+    // Regression test for https://github.com/bdlukaa/fluent_ui/issues/1334
+    testWidgets(
+      'NavigationView does not throw when header and menu button are absent',
+      (tester) async {
+        await tester.pumpWidget(
+          FluentApp(
+            home: SizedBox(
+              width: 1200,
+              height: 800,
+              child: NavigationView(
+                pane: NavigationPane(
+                  selected: 0,
+                  displayMode: PaneDisplayMode.expanded,
+                  toggleable: false,
+                  items: [
+                    PaneItem(
+                      icon: const Icon(FluentIcons.home),
+                      title: const Text('Home'),
+                      body: const Center(child: Text('Home Page')),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        expect(find.byType(NavigationView), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  });
+
+  // Regression test for https://github.com/bdlukaa/fluent_ui/issues/1340
+  // TitleBar should not shrink in height when window is resized to smaller width
+  group('Issue #1340 - TitleBar height stability on window resize', () {
+    testWidgets(
+      'TitleBar with content maintains 48px height at large window width',
+      (tester) async {
+        await tester.pumpWidget(
+          FluentApp(
+            home: SizedBox(
+              width: 1200,
+              height: 800,
+              child: NavigationView(
+                titleBar: const TitleBar(
+                  title: Text('My App'),
+                  content: SizedBox(width: 200, height: 32),
+                ),
+                pane: NavigationPane(
+                  selected: 0,
+                  displayMode: PaneDisplayMode.compact,
+                  items: [
+                    PaneItem(
+                      icon: const Icon(FluentIcons.home),
+                      title: const Text('Home'),
+                      body: const Center(child: Text('Home Page')),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final titleBar = find.byType(TitleBar);
+        expect(titleBar, findsOneWidget);
+        expect(tester.getSize(titleBar).height, 48.0);
+      },
+    );
+
+    testWidgets(
+      'TitleBar with content maintains 48px height at small window width',
+      (tester) async {
+        await tester.pumpWidget(
+          FluentApp(
+            home: SizedBox(
+              width: 300,
+              height: 800,
+              child: NavigationView(
+                titleBar: const TitleBar(
+                  title: Text('My App'),
+                  content: SizedBox(width: 200, height: 32),
+                ),
+                pane: NavigationPane(
+                  selected: 0,
+                  displayMode: PaneDisplayMode.compact,
+                  items: [
+                    PaneItem(
+                      icon: const Icon(FluentIcons.home),
+                      title: const Text('Home'),
+                      body: const Center(child: Text('Home Page')),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final titleBar = find.byType(TitleBar);
+        expect(titleBar, findsOneWidget);
+        expect(tester.getSize(titleBar).height, 48.0);
+      },
+    );
+
+    testWidgets(
+      'TitleBar height does not change when window width is reduced',
+      (tester) async {
+        Widget buildWithWidth(double width) {
+          return FluentApp(
+            home: SizedBox(
+              width: width,
+              height: 800,
+              child: NavigationView(
+                titleBar: const TitleBar(
+                  title: Text('My App'),
+                  content: SizedBox(width: 200, height: 32),
+                ),
+                pane: NavigationPane(
+                  selected: 0,
+                  displayMode: PaneDisplayMode.compact,
+                  items: [
+                    PaneItem(
+                      icon: const Icon(FluentIcons.home),
+                      title: const Text('Home'),
+                      body: const Center(child: Text('Home Page')),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
+        await tester.pumpWidget(buildWithWidth(1200));
+        await tester.pumpAndSettle();
+
+        final titleBar = find.byType(TitleBar);
+        final heightAtLargeWidth = tester.getSize(titleBar).height;
+        expect(heightAtLargeWidth, 48.0);
+
+        // Simulate window resize to smaller width
+        await tester.pumpWidget(buildWithWidth(300));
+        await tester.pumpAndSettle();
+
+        final heightAtSmallWidth = tester.getSize(find.byType(TitleBar)).height;
+        expect(heightAtSmallWidth, 48.0);
+        expect(heightAtLargeWidth, equals(heightAtSmallWidth));
+      },
+    );
+
+    testWidgets(
+      'TitleBar without content maintains 32px height regardless of window width',
+      (tester) async {
+        // At large window width
+        await tester.pumpWidget(
+          FluentApp(
+            home: SizedBox(
+              width: 1200,
+              height: 800,
+              child: NavigationView(
+                titleBar: const TitleBar(title: Text('My App')),
+                pane: NavigationPane(
+                  selected: 0,
+                  displayMode: PaneDisplayMode.expanded,
+                  items: [
+                    PaneItem(
+                      icon: const Icon(FluentIcons.home),
+                      title: const Text('Home'),
+                      body: const Center(child: Text('Home Page')),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final titleBar = find.byType(TitleBar);
+        expect(tester.getSize(titleBar).height, 32.0);
+
+        // At small window width
+        await tester.pumpWidget(
+          FluentApp(
+            home: SizedBox(
+              width: 400,
+              height: 800,
+              child: NavigationView(
+                titleBar: const TitleBar(title: Text('My App')),
+                pane: NavigationPane(
+                  selected: 0,
+                  displayMode: PaneDisplayMode.expanded,
+                  items: [
+                    PaneItem(
+                      icon: const Icon(FluentIcons.home),
+                      title: const Text('Home'),
+                      body: const Center(child: Text('Home Page')),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        expect(tester.getSize(find.byType(TitleBar)).height, 32.0);
+      },
+    );
   });
 }

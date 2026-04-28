@@ -65,12 +65,17 @@ class AppTheme extends ChangeNotifier {
     _locale = locale;
     notifyListeners();
   }
+
+  VisualDensity _visualDensity = VisualDensity.standard;
+  VisualDensity get visualDensity => _visualDensity;
+  set visualDensity(final VisualDensity density) {
+    _visualDensity = density;
+    notifyListeners();
+  }
 }
 
 AccentColor get systemAccentColor {
-  if ((defaultTargetPlatform == TargetPlatform.windows ||
-          defaultTargetPlatform == TargetPlatform.android) &&
-      !kIsWeb) {
+  if (defaultTargetPlatform.supportsAccentColor) {
     return AccentColor.swatch({
       'darkest': SystemTheme.accentColor.darkest,
       'darker': SystemTheme.accentColor.darker,

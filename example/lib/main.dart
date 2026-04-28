@@ -92,7 +92,7 @@ class MyApp extends StatelessWidget {
           darkTheme: FluentThemeData(
             brightness: Brightness.dark,
             accentColor: appTheme.color,
-            visualDensity: VisualDensity.standard,
+            visualDensity: appTheme.visualDensity,
             focusTheme: FocusThemeData(
               glowFactor: is10footScreen(context) ? 2.0 : 0.0,
             ),
@@ -100,7 +100,7 @@ class MyApp extends StatelessWidget {
           ),
           theme: FluentThemeData(
             accentColor: appTheme.color,
-            visualDensity: VisualDensity.standard,
+            visualDensity: appTheme.visualDensity,
             focusTheme: FocusThemeData(
               glowFactor: is10footScreen(context) ? 2.0 : 0.0,
             ),
@@ -211,11 +211,21 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
                 appTheme.mode = ThemeMode.light;
               }
             },
-            child: const Icon(WindowsIcons.lightbulb),
+            child: const Icon(WindowsIcons.lightbulb, size: 16),
           ),
         ),
         captionControls: const WindowButtons(),
         onDragStarted: !kIsWeb ? windowManager.startDragging : null,
+        onDoubleTap: !kIsWeb
+            ? () async {
+                final isMaximized = await windowManager.isMaximized();
+                if (isMaximized) {
+                  windowManager.restore();
+                } else {
+                  windowManager.maximize();
+                }
+              }
+            : null,
       ),
       pane: NavigationPane(
         selected: _index,
@@ -264,6 +274,10 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
                 title: const Text('Checkbox'),
                 body: inputs.CheckBoxPage(),
               ),
+              PaneItem(
+                title: const Text('Radio'),
+                body: inputs.RadioButtonPage(),
+              ),
               PaneItem(title: const Text('Slider'), body: inputs.SliderPage()),
               PaneItem(
                 title: const Text('ToggleSwitch'),
@@ -276,6 +290,10 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
               PaneItem(
                 title: const Text('ColorPicker'),
                 body: forms.ColorPickerPage(),
+              ),
+              PaneItem(
+                title: const Text('Rating Control'),
+                body: inputs.RatingControlPage(),
               ),
             ],
           ),
@@ -411,10 +429,6 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
               PaneItem(
                 title: const Text('ProgressBar'),
                 body: surfaces.ProgressBarPage(),
-              ),
-              PaneItem(
-                title: const Text('RatingBar'),
-                body: inputs.RatingBarPage(),
               ),
             ],
           ),

@@ -521,7 +521,7 @@ class _FlyoutPositionDelegate extends SingleChildLayoutDelegate {
 
     final bottomY = clampVertical(targetOffset.dy);
 
-    final horizontalTopY = clampVertical(topY + flyoutSize.height);
+    final horizontalTopY = clampVertical(targetOffset.dy - targetSize.height);
     final horizontalY = clampVertical(
       targetOffset.dy - targetSize.height / 2 - flyoutSize.height / 2,
     );
@@ -789,7 +789,7 @@ class FlyoutController with ChangeNotifier, WidgetsBindingObserver {
     NavigatorState? navigatorKey,
     FlyoutTransitionBuilder? transitionBuilder,
     Duration? transitionDuration,
-    Duration? reverseTransitionDuration,
+    Duration? reverseTransitionDuration = Duration.zero,
     Curve transitionCurve = Curves.linear,
     Offset? position,
     RouteSettings? settings,
@@ -801,6 +801,7 @@ class FlyoutController with ChangeNotifier, WidgetsBindingObserver {
 
     final context = _attachState!.context;
     assert(debugCheckHasFluentTheme(context));
+    final textDirection = Directionality.of(context);
 
     final theme = FluentTheme.of(context);
     transitionDuration ??= theme.fastAnimationDuration;
@@ -848,14 +849,12 @@ class FlyoutController with ChangeNotifier, WidgetsBindingObserver {
             case FlyoutPlacementMode.bottomLeft:
             case FlyoutPlacementMode.bottomRight:
             default:
-              return ClipRect(
-                child: SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0, -0.15),
-                    end: Offset.zero,
-                  ).animate(animation),
-                  child: flyout,
-                ),
+              return SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, -0.15),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: flyout,
               );
           }
         };
@@ -886,6 +885,7 @@ class FlyoutController with ChangeNotifier, WidgetsBindingObserver {
           position: position,
           builder: builder,
           buildTarget: buildTarget,
+          textDirection: textDirection,
         );
       },
     );
@@ -990,6 +990,7 @@ class _FlyoutPage extends StatelessWidget {
     required this.position,
     required this.builder,
     required this.buildTarget,
+    required this.textDirection,
   }) : _attachState = attachState;
 
   final NavigatorState navigator;
@@ -1017,6 +1018,7 @@ class _FlyoutPage extends StatelessWidget {
   final Offset? position;
   final WidgetBuilder builder;
   final bool buildTarget;
+  final TextDirection textDirection;
 
   @override
   Widget build(BuildContext context) {
@@ -1024,9 +1026,7 @@ class _FlyoutPage extends StatelessWidget {
       builder: (context, rootSize, menus, keys) {
         assert(menus.length == keys.length);
 
-        final barrier = ColoredBox(
-          color: barrierColor ?? Colors.black.withValues(alpha: 0.3),
-        );
+        final barrier = ColoredBox(color: barrierColor ?? Colors.transparent);
 
         FlyoutPlacementMode getAutoPlacementMode(Size flyoutSize) {
           final defaultPreferred = (position == null
@@ -1194,9 +1194,12 @@ class _FlyoutPage extends StatelessWidget {
           );
         }
 
-        return FadeTransition(
-          opacity: CurvedAnimation(curve: Curves.ease, parent: animation),
-          child: box,
+        return Directionality(
+          textDirection: textDirection,
+          child: FadeTransition(
+            opacity: CurvedAnimation(curve: Curves.ease, parent: animation),
+            child: box,
+          ),
         );
       },
     );

@@ -607,7 +607,7 @@ class AutoSuggestBoxState<T> extends State<AutoSuggestBox<T>> {
         );
 
         final screenHeight =
-            MediaQuery.sizeOf(context).height -
+            MediaQuery.heightOf(context) -
             MediaQuery.viewPaddingOf(context).bottom;
         final overlayY = globalOffset.dy + box.size.height;
         final maxHeight = (screenHeight - overlayY).clamp(
@@ -924,6 +924,14 @@ class _AutoSuggestBoxOverlayState<T> extends State<_AutoSuggestBoxOverlay<T>> {
   /// Tile height + padding
   static const tileHeight = kOneLineTileHeight + 2.0;
 
+  /// Returns the tile height adjusted for the given visual density.
+  static double adjustedTileHeight(VisualDensity density) {
+    return (tileHeight + density.baseSizeAdjustment.dy).clamp(
+      0.0,
+      double.infinity,
+    );
+  }
+
   late List<AutoSuggestBoxItem<T>> items = widget.items;
 
   @override
@@ -934,7 +942,8 @@ class _AutoSuggestBoxOverlayState<T> extends State<_AutoSuggestBoxOverlay<T>> {
 
       final theme = FluentTheme.of(context);
 
-      final currentSelectedOffset = tileHeight * index;
+      final currentSelectedOffset =
+          adjustedTileHeight(theme.visualDensity) * index;
 
       scrollController.animateTo(
         currentSelectedOffset,
@@ -964,68 +973,70 @@ class _AutoSuggestBoxOverlayState<T> extends State<_AutoSuggestBoxOverlay<T>> {
     final theme = FluentTheme.of(context);
     final localizations = FluentLocalizations.of(context);
 
-    return TextFieldTapRegion(
-      child: FocusScope(
-        node: widget.node,
-        child: Container(
-          constraints: BoxConstraints(maxHeight: widget.maxHeight),
-          decoration: ShapeDecoration(
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(4)),
+    return MediaQuery.withNoTextScaling(
+      child: TextFieldTapRegion(
+        child: FocusScope(
+          node: widget.node,
+          child: Container(
+            constraints: BoxConstraints(maxHeight: widget.maxHeight),
+            decoration: ShapeDecoration(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(4)),
+              ),
+              color: theme.resources.cardBackgroundFillColorDefault,
+              shadows: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  offset: const Offset(-1, 1),
+                  blurRadius: 2,
+                  spreadRadius: 3,
+                ),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  offset: const Offset(1, 1),
+                  blurRadius: 2,
+                  spreadRadius: 3,
+                ),
+              ],
             ),
-            color: theme.resources.cardBackgroundFillColorDefault,
-            shadows: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                offset: const Offset(-1, 1),
-                blurRadius: 2,
-                spreadRadius: 3,
+            child: Acrylic(
+              child: ValueListenableBuilder<TextEditingValue>(
+                valueListenable: widget.controller,
+                builder: (context, value, _) {
+                  final sortedItems = widget.sorter(value.text, items);
+                  late Widget result;
+                  if (sortedItems.isEmpty) {
+                    result =
+                        widget.noResultsFoundBuilder?.call(context) ??
+                        Padding(
+                          padding: const EdgeInsetsDirectional.only(bottom: 4),
+                          child: _AutoSuggestBoxOverlayTile(
+                            text: Text(localizations.noResultsFoundLabel),
+                          ),
+                        );
+                  } else {
+                    result = ListView.builder(
+                      itemExtent: adjustedTileHeight(theme.visualDensity),
+                      controller: scrollController,
+                      key: ValueKey<int>(sortedItems.length),
+                      shrinkWrap: true,
+                      padding: const EdgeInsetsDirectional.only(bottom: 4),
+                      itemCount: sortedItems.length,
+                      itemBuilder: (context, index) {
+                        final item = sortedItems[index];
+                        return widget.itemBuilder?.call(context, item) ??
+                            _AutoSuggestBoxOverlayTile(
+                              text: item.child ?? Text(item.label),
+                              semanticLabel: item.semanticLabel ?? item.label,
+                              selected: item._selected || widget.node.hasFocus,
+                              onSelected: () => widget.onSelected(item),
+                            );
+                      },
+                    );
+                  }
+                  return result;
+                },
               ),
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                offset: const Offset(1, 1),
-                blurRadius: 2,
-                spreadRadius: 3,
-              ),
-            ],
-          ),
-          child: Acrylic(
-            child: ValueListenableBuilder<TextEditingValue>(
-              valueListenable: widget.controller,
-              builder: (context, value, _) {
-                final sortedItems = widget.sorter(value.text, items);
-                late Widget result;
-                if (sortedItems.isEmpty) {
-                  result =
-                      widget.noResultsFoundBuilder?.call(context) ??
-                      Padding(
-                        padding: const EdgeInsetsDirectional.only(bottom: 4),
-                        child: _AutoSuggestBoxOverlayTile(
-                          text: Text(localizations.noResultsFoundLabel),
-                        ),
-                      );
-                } else {
-                  result = ListView.builder(
-                    itemExtent: tileHeight,
-                    controller: scrollController,
-                    key: ValueKey<int>(sortedItems.length),
-                    shrinkWrap: true,
-                    padding: const EdgeInsetsDirectional.only(bottom: 4),
-                    itemCount: sortedItems.length,
-                    itemBuilder: (context, index) {
-                      final item = sortedItems[index];
-                      return widget.itemBuilder?.call(context, item) ??
-                          _AutoSuggestBoxOverlayTile(
-                            text: item.child ?? Text(item.label),
-                            semanticLabel: item.semanticLabel ?? item.label,
-                            selected: item._selected || widget.node.hasFocus,
-                            onSelected: () => widget.onSelected(item),
-                          );
-                    },
-                  );
-                }
-                return result;
-              },
             ),
           ),
         ),
@@ -1097,6 +1108,7 @@ class __AutoSuggestBoxOverlayTileState extends State<_AutoSuggestBoxOverlayTile>
       ),
       selected: widget.selected,
       onPressed: widget.onSelected,
+      contentPadding: EdgeInsets.zero,
     );
   }
 }

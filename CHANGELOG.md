@@ -1,4 +1,29 @@
-## [next]
+## 4.15.1
+
+- fix: `NavigationView` auto display mode no longer shows a brief overlay when resizing from minimal to compact mode ([#1316](https://github.com/bdlukaa/fluent_ui/pull/1316))
+- fix: `MenuFlyout` sub-item tree now correctly expands to the left and shows a `chevron_left` icon when right-to-left directionality is enabled ([#1342](https://github.com/bdlukaa/fluent_ui/issues/1342))
+- fix: `NavigationView` compact pane `PaneItemExpander` flyout is now correctly placed in right-to-left directionality; Flyout `leftTop` and `rightTop` placement modes now correctly align with the top of the target element when the flyout is taller than the available space above the target ([#1289](https://github.com/bdlukaa/fluent_ui/issues/1289))
+- fix: `Tab` in `TabView` is now draggable from its entire area, including the padding ([#1356](https://github.com/bdlukaa/fluent_ui/issues/1356))
+
+## 4.15.0
+
+- fix: `MenuFlyout` no longer throws `TypeError` on sub-items ([#1337](https://github.com/bdlukaa/fluent_ui/issues/1337))
+- feat: Controls now respond to `VisualDensity` from `FluentThemeData` for compact sizing. Use `FluentThemeData(visualDensity: VisualDensity.compact)` to enable compact mode ([#1175](https://github.com/bdlukaa/fluent_ui/issues/1175))
+- fix: `NavigationView` no longer throws `BoxConstraints has a negative minimum height` when header and menu button are both absent ([#1334](https://github.com/bdlukaa/fluent_ui/issues/1334))
+- fix: `ProgressBar` chooses the correct direction when directionality is right-to-left ([#1291](https://github.com/bdlukaa/fluent_ui/issues/1291))
+- fix: Flyout's bottom shadow no longer clipped in bottom placement modes ([#1323](https://github.com/bdlukaa/fluent_ui/issues/1323))
+- fix: Correctly handle system text scaling on `DatePicker`, `TimePicker`, `AutoSuggestBox`, `CalendarDatePicker` popups ([#1321](https://github.com/bdlukaa/fluent_ui/issues/1321), [#1286](https://github.com/bdlukaa/fluent_ui/pull/1286))
+- **BREAKING** feat: Rename `RatingBar` to `RatingControl`, and updated its style ([#1274](https://github.com/bdlukaa/fluent_ui/issues/1274))
+- fix: `NumberBox` compact overlay is now positioned correctly on right-to-left directionality ([#1326](https://github.com/bdlukaa/fluent_ui/issues/1326))
+- **BREAKING** feat: Add `TreeViewController` for programmatic control of `TreeView` ([#1140](https://github.com/bdlukaa/fluent_ui/issues/1140))
+  - `TreeViewController` provides methods: `getItemFromValue()`, `addItem()`, `addItems()`, `removeItem()`, `moveItem()`, `expandItem()`, `collapseItem()`, `expandAll()`, `collapseAll()`, `selectItem()`, `deselectItem()`, `selectAll()`, `deselectAll()`
+  - Reordering items is supported via `controller.moveItem(item, newParent: target, index: 0)`
+- **BREAKING** feat: `TreeViewItem.children` is now unmodifiable. Use `TreeViewController` methods (`addItem()`, `addItems()`, `removeItem()`, `moveItem()`) to modify tree structure.
+- feat: `TitleBar` now supports double-click callback to maximize or restore the window ([#1298](https://github.com/bdlukaa/fluent_ui/issues/1298))
+- fix: Correctly apply `TitleBar`'s `isBackButtonEnabled` ([#1298](https://github.com/bdlukaa/fluent_ui/issues/1298))
+- fix: `TitleBar` height no longer shrinks when the window is resized to a smaller width ([#1340](https://github.com/bdlukaa/fluent_ui/issues/1340))
+
+## 4.14.0
 
 - refactor: Consistent theme classes
 - fix: `CalendarDatePicker` throws state error when selecting date ([#1251](https://github.com/bdlukaa/fluent_ui/issues/1251))
@@ -12,12 +37,27 @@
 - refactor: Expose `TooltipState`
 - fix: `NumberBox` calls `onChanged()` when clicked on ([#1196](https://github.com/bdlukaa/fluent_ui/issues/1196))
 - feat: Add `NumberBox.parser`, which allows to use a custom parse function for the number box. ([#1166](https://github.com/bdlukaa/fluent_ui/issues/1166))
+- feat: Support long pressing on `NumberBox` increment and decrement buttons. Added `NumberBox.interval` ([#1267](https://github.com/bdlukaa/fluent_ui/issues/1267), [#843](https://github.com/bdlukaa/fluent_ui/issues/843), [#1285](https://github.com/bdlukaa/fluent_ui/pull/1285/changes))
 - fix: Correctly lerp between theme properties ([#953](https://github.com/bdlukaa/fluent_ui/issues/953))
 - fix: Correctly apply theme durations to animations ([#1231](https://github.com/bdlukaa/fluent_ui/issues/1231))
 - feat: Apply text height on `Typography`
 - refactor: Encourage usage of `EdgeInsetsDirectional` instead of `EdgeInsets`
-- refactor: Remove `BottomNavigationBar` and all its related widgets
+- **BREAKING CHANGE** refactor: Remove `BottomNavigationBar` and all its related widgets
 - **MINOR BREAKING** refactor: Remove `Brightness.isLight`, `Brightness.isDark` and `Brightness.opposite` extension methods. Use `switch` statements instead.
+  Before:
+  ```dart
+  final theme = FluentTheme.of(context);
+  final color = theme.brightness.isDark ? Colors.white : Colors.black;
+  ```
+
+  After:
+  ```dart
+  final theme = FluentTheme.of(context);
+  final color = switch (theme.brightness) {
+    Brightness.light => Colors.black,
+    Brightness.dark => Colors.white,
+  };
+  ```
 - feat: Add latest color resources from Microsoft UI XAML.
 - refactor(perf): Optimize animation handling in Scrollbar, NavigationView, Acrylic and buttons.
 - refactor(perf): Reduce calls to `setState` and frames scheduling in several widgets.
@@ -42,6 +82,36 @@
   - `InfoBadge` style variants (success, attention, critical), dot badges and adaptive sizing ([#1277](https://github.com/bdlukaa/fluent_ui/pull/1277))
   - `NavigationView` holds a local history. Use `NavigationView.of(context).pop()` or `PaneBackButton` to navigate to the previous index ([#1266](https://github.com/bdlukaa/fluent_ui/issues/1266))
 - chore: Updated Russian translations ([#1253](https://github.com/bdlukaa/fluent_ui/pull/1253/))
+- Update Chinese translations ([#1283](https://github.com/bdlukaa/fluent_ui/pull/1283))
+- **BREAKING CHANGE** `RadioButton` API reworked to use `RadioGroup` for state management.
+  - Removed `checked` and `onChanged` parameters from **`RadioButton`**.
+  - Added required `value` parameter to `RadioButton<T>`.
+  - Radio buttons must now be wrapped in a `RadioGroup<T>`, which holds `groupValue` and `onChanged`.
+  - Radio buttons are no longer toggleable (selecting an already-selected button has no effect).
+
+  Before:
+  ```dart
+  RadioButton(
+    checked: selectedIndex == 0,
+    onChanged: (value) { if (value) setState(() => selectedIndex = 0); },
+    content: Text('Option 1'),
+  )
+  ```
+
+  After:
+  ```dart
+  RadioGroup<int>(
+    groupValue: selectedIndex,
+    onChanged: (value) { if (value != null) setState(() => selectedIndex = value); },
+    child: Column(
+      children: [
+        RadioButton<int>(value: 0, content: Text('Option 1')),
+        RadioButton<int>(value: 1, content: Text('Option 2')),
+      ],
+    ),
+  )
+  ```
+- fix: Flyout barrier color ([#1276](https://github.com/bdlukaa/fluent_ui/issues/1276))
 
 ## 4.13.0
 

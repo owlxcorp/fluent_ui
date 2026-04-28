@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:fluent_ui/fluent_ui.dart';
@@ -118,6 +119,15 @@ class NumberBox<T extends num> extends StatefulWidget {
   /// [LogicalKeyboardKey.pageUp] and decremented when the user lick on the
   /// shortcut [LogicalKeyboardKey.pageDown].
   final num largeChange;
+
+  /// The interval between auto-increments or auto-decrements when the user
+  /// holds a spin button.
+  ///
+  /// Defaults to 100 milliseconds. One step is determined by [smallChange].
+  ///
+  /// Set to `null` to disable hold-to-repeat, so a single increment or
+  /// decrement is fired per press.
+  final Duration? interval;
 
   /// The precision indicates the number of digits that's accepted for double
   /// value.
@@ -321,6 +331,7 @@ class NumberBox<T extends num> extends StatefulWidget {
     this.clearButton = true,
     this.smallChange = 1,
     this.largeChange = 10,
+    this.interval = const Duration(milliseconds: 100),
     this.precision,
     this.pattern,
     this.formatter,
@@ -534,6 +545,11 @@ class NumberBoxState<T extends num> extends State<NumberBox<T>> {
         final boxContext = _textBoxKey.currentContext;
         if (boxContext == null) return const SizedBox.shrink();
         final box = boxContext.findRenderObject()! as RenderBox;
+        final isRtl = Directionality.of(context) == TextDirection.rtl;
+        final overlayHeight =
+            (kNumberBoxOverlayHeight +
+                    FluentTheme.of(context).visualDensity.baseSizeAdjustment.dy)
+                .clamp(0.0, double.infinity);
 
         final Widget child = PositionedDirectional(
           width: kNumberBoxOverlayWidth,
@@ -541,8 +557,8 @@ class NumberBoxState<T extends num> extends State<NumberBox<T>> {
             link: _layerLink,
             showWhenUnlinked: false,
             offset: Offset(
-              box.size.width - kNumberBoxOverlayWidth,
-              box.size.height / 2 - kNumberBoxOverlayHeight / 2,
+              isRtl ? 0 : box.size.width - kNumberBoxOverlayWidth,
+              box.size.height / 2 - overlayHeight / 2,
             ),
             child: SizedBox(
               width: kNumberBoxOverlayWidth,
@@ -552,6 +568,7 @@ class NumberBoxState<T extends num> extends State<NumberBox<T>> {
                   child: _NumberBoxCompactOverlay(
                     onIncrement: incrementSmall,
                     onDecrement: decrementSmall,
+                    interval: widget.interval,
                   ),
                 ),
               ),
@@ -581,6 +598,7 @@ class NumberBoxState<T extends num> extends State<NumberBox<T>> {
   Widget build(BuildContext context) {
     assert(debugCheckHasFluentTheme(context));
     assert(debugCheckHasOverlay(context));
+    assert(debugCheckHasDirectionality(context));
 
     final textFieldSuffix = <Widget>[
       // Ensure all modes have a suffix. This is necessary to ensure the text
@@ -600,15 +618,17 @@ class NumberBoxState<T extends num> extends State<NumberBox<T>> {
     switch (widget.mode) {
       case SpinButtonPlacementMode.inline:
         textFieldSuffix.addAll([
-          IconButton(
-            key: _incrementButtonKey,
+          _SpinButton(
+            buttonKey: _incrementButtonKey,
             icon: const WindowsIcon(WindowsIcons.chevron_up),
-            onPressed: widget.onChanged != null ? incrementSmall : null,
+            onAction: widget.onChanged != null ? incrementSmall : null,
+            interval: widget.interval,
           ),
-          IconButton(
-            key: _decrementButtonKey,
+          _SpinButton(
+            buttonKey: _decrementButtonKey,
             icon: const WindowsIcon(WindowsIcons.chevron_down),
-            onPressed: widget.onChanged != null ? decrementSmall : null,
+            onAction: widget.onChanged != null ? decrementSmall : null,
+            interval: widget.interval,
           ),
           const SizedBox(width: 4),
         ]);
@@ -814,19 +834,85 @@ class NumberBoxState<T extends num> extends State<NumberBox<T>> {
   }
 }
 
+class _SpinButton extends StatefulWidget {
+  final VoidCallback? onAction;
+  final Duration? interval;
+  final Widget icon;
+  final Key? buttonKey;
+  final IconButtonMode? iconButtonMode;
+
+  const _SpinButton({
+    required this.onAction,
+    required this.interval,
+    required this.icon,
+    this.buttonKey,
+    this.iconButtonMode,
+  });
+
+  @override
+  State<_SpinButton> createState() => _SpinButtonState();
+}
+
+class _SpinButtonState extends State<_SpinButton> {
+  Timer? _timer;
+
+  void _startRepeating(PointerDownEvent event) {
+    if (widget.onAction == null) return;
+    widget.onAction!();
+    final interval = widget.interval;
+    if (interval == null) return;
+    _timer = Timer.periodic(interval, (_) {
+      widget.onAction?.call();
+    });
+  }
+
+  void _stopRepeating() {
+    _timer?.cancel();
+    _timer = null;
+  }
+
+  @override
+  void dispose() {
+    _stopRepeating();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      onPointerDown: _startRepeating,
+      onPointerUp: (_) => _stopRepeating(),
+      onPointerCancel: (_) => _stopRepeating(),
+      child: IconButton(
+        key: widget.buttonKey,
+        icon: widget.icon,
+        // Empty callback keeps the button in enabled visual state.
+        // The actual action is triggered by the Listener's pointer events.
+        onPressed: widget.onAction != null ? () {} : null,
+        iconButtonMode: widget.iconButtonMode,
+      ),
+    );
+  }
+}
+
 class _NumberBoxCompactOverlay extends StatelessWidget {
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
+  final Duration? interval;
 
   const _NumberBoxCompactOverlay({
     required this.onIncrement,
     required this.onDecrement,
+    required this.interval,
   });
 
   @override
   Widget build(BuildContext context) {
     assert(debugCheckHasFluentTheme(context));
     final theme = FluentTheme.of(context);
+    final overlayHeight =
+        (kNumberBoxOverlayHeight + theme.visualDensity.baseSizeAdjustment.dy)
+            .clamp(0.0, double.infinity);
 
     return Padding(
       padding: const EdgeInsetsDirectional.only(start: 10),
@@ -837,7 +923,7 @@ class _NumberBoxCompactOverlay extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Container(
-            height: kNumberBoxOverlayHeight,
+            height: overlayHeight,
             width: kNumberBoxOverlayWidth,
             decoration: BoxDecoration(
               color: theme.menuColor,
@@ -849,14 +935,16 @@ class _NumberBoxCompactOverlay extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                IconButton(
+                _SpinButton(
                   icon: const WindowsIcon(WindowsIcons.chevron_up, size: 16),
-                  onPressed: onIncrement,
+                  onAction: onIncrement,
+                  interval: interval,
                   iconButtonMode: IconButtonMode.large,
                 ),
-                IconButton(
+                _SpinButton(
                   icon: const WindowsIcon(WindowsIcons.chevron_down, size: 16),
-                  onPressed: onDecrement,
+                  onAction: onDecrement,
+                  interval: interval,
                   iconButtonMode: IconButtonMode.large,
                 ),
               ],
@@ -935,6 +1023,7 @@ class NumberFormBox<T extends num> extends ControllableFormBox {
     bool clearButton = true,
     num largeChange = 10,
     num smallChange = 1,
+    Duration? interval = const Duration(milliseconds: 100),
     num? max,
     num? min,
     int precision = 2,
@@ -978,6 +1067,7 @@ class NumberFormBox<T extends num> extends ControllableFormBox {
                  clearButton: clearButton,
                  largeChange: largeChange,
                  smallChange: smallChange,
+                 interval: interval,
                  precision: format != null ? null : precision,
                  format: format,
                  parse: parse,

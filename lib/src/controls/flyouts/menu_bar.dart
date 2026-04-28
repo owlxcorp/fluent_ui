@@ -144,7 +144,6 @@ class MenuBarState extends State<MenuBar> {
       ),
       additionalOffset: 0,
       horizontalOffset: position.dx + resolvedBarMargin.left,
-      reverseTransitionDuration: Duration.zero,
       barrierColor: Colors.transparent,
       builder: (context) {
         return TapRegion(
@@ -219,7 +218,12 @@ class MenuBarState extends State<MenuBar> {
       groupId: MenuBar,
       onTapOutside: (_) => closeFlyout(),
       child: Container(
-        height: 40,
+        constraints: BoxConstraints(
+          minHeight: (40 + theme.visualDensity.baseSizeAdjustment.dy).clamp(
+            0.0,
+            double.infinity,
+          ),
+        ),
         padding: EdgeInsetsDirectional.only(
           top: barMargin.top,
           bottom: barMargin.bottom,
